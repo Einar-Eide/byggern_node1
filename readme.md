@@ -1,0 +1,1 @@
+Dette er koden som kjører på node1 av Byggern' labben.
