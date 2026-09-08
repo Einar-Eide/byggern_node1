@@ -75,11 +75,17 @@ int main(void) {
 	
 
 	*/
-
 	uart_init( MYUBRR );
 	MCUCR |= (1<<SRE);
 
-	SRAM_test();
+	
+	//Sette port PD4 til output
+	DDRD = (1 << DDD4);
+
+	//config timer?
+	TCCR0 |= (1<<WGM01) | (1<<WGM00) | (1<<COM00) | (1<<COM01) | (1<<CS00);
+
+	//SRAM_test();
 
     /* Replace with your application code */
     while (1) 
