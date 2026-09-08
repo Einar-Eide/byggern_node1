@@ -48,6 +48,6 @@ debug:
 	if pgrep avarice; then pkill avarice; fi
 	avrdude -p $(TARGET_DEVICE) -c $(PROGRAMMER) -U flash:w:$(BUILD_DIR)/main.hex:i
 	x-terminal-emulator -e avarice --edbg --ignore-intr :4242
-	sleep 2
+	sleep 3
 	avr-gdb -tui -iex "target remote localhost:4242" $(BUILD_DIR)/a.out
 	killall -s 9 avarice	
