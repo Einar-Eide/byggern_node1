@@ -2,6 +2,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdio.h> 
 
 #include "UART.h"
 
@@ -25,7 +26,13 @@ int main(void)
 		PORTA = (0<<0);
 		_delay_ms(10);
 
-		uart_send('a');
+		// uart_send('a');
+		//char X = uart_read();
+		//uart_send(X);
+
+		printf("yey!");
+
+
     }
 }
 

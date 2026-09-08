@@ -4,6 +4,8 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdio.h> 
+
 
 #define BAUD 9600
 #define MYUBRR (F_CPU/16)/BAUD - 1
@@ -11,5 +13,5 @@
 
 void uart_init(unsigned int ubrr);
     
-void uart_send(unsigned char data);
-char uart_read();
+int uart_send(char data, FILE *stream);
+int uart_read(FILE *stream);

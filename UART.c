@@ -11,21 +11,26 @@ void uart_init(unsigned int ubrr) {
     // Aktiver sending og mottak
     UCSR0B = (1 << TXEN0) | (1 << RXEN0);
 
-    // 8 databiter, 1 stoppbit, ingen paritet
-    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+    // 8 databiter, 2 stoppbit, ingen paritet
+    UCSR0C = (1 << URSEL0) | (1 << USBS0) | (3 << UCSZ00);
+
+
+    fdevopen(uart_send, uart_read);
 }
 
 
-void uart_send(unsigned char data) {
+int uart_send(char data, FILE *stream) {
     /* Wait for empty transmit buffer */
     while ( !( UCSR0A & (1<<UDRE0)) );
     /* Put data into buffer, sends the data */
     UDR0 = data;
+    
+    return 0;
 }
 
 
 
-char uart_read(void){
+int uart_read(FILE *stream){
     /* Wait for data to be received */
     while ( !(UCSR0A & (1<<RXC0)) );
     /* Get and return received data from buffer */
