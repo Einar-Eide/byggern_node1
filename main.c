@@ -7,6 +7,7 @@
 
 
 #include "UART.h"
+#include "ADC.h"
 
 
 void SRAM_test(void)
@@ -79,17 +80,47 @@ int main(void) {
 	MCUCR |= (1<<SRE);
 
 	
-	//Sette port PD4 til output
+	// Sette port PD4 til output
 	DDRD = (1 << DDD4);
 
-	//config timer?
-	TCCR0 |= (1<<WGM01) | (1<<WGM00) | (1<<COM00) | (1<<COM01) | (1<<CS00);
+    // set counter reset value
+    OCR3AL = 1;
 
-	//SRAM_test();
+	// config timer
+    TCCR3A = (1<<COM3A0);
+    TCCR3B = (1<<CS30) | (1<<WGM32);
+
+    
+    volatile uint8_t *joy_x_min;
+    volatile uint8_t *joy_x_max;
+    volatile uint8_t *joy_y_min;
+    volatile uint8_t *joy_y_max;
+
+    calibrate_joy(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
+
+
+    printf("Finnished calibration of joystick!\n\r");
+    
+    printf("joy_x min: %d\t\max: %d\n\r", *joy_x_min, *joy_x_max);
+    printf("joy_y min: %d\t\max: %d\n\r", *joy_y_min, *joy_y_max);
+    
+
+	SRAM_test();
 
     /* Replace with your application code */
     while (1) 
     {
+
+        uint8_t x = 0;
+        uint8_t y = 0;
+
+        uint8_t x1 = 0;
+        uint8_t y1 = 0;
+
+        get_position(&x, &y, &x1, &y1);
+        get_direction(&x, &y, &x1, &y1);
+        
+
 		/*PORTA = (1<<0);
 		_delay_ms(10);
 		PORTA = (0<<0);
