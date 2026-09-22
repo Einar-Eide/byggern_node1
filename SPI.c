@@ -58,15 +58,30 @@ void SPI_write_byte(char cData){
     
 }
 
-char SPI_read_byte(){
-    char cData = 0;
+void SPI_read_byte(char *cData){
 
-    SPDR = cData;
-    /* Wait for transmission complete */
-    while(!(SPSR & (1<<SPIF)));
+    SPI_write_byte(*cData);
 
-    cData = SPDR;
-    
-    return cData;
-
+    *cData = SPDR;
 }
+
+
+void SPI_write(char* buffer, size_t length) {
+    for (size_t i=0; i<length; i++){
+        SPI_write_byte(*(buffer+i));
+    }
+
+    SPI_release_slaves();
+    
+}
+
+void SPI_read(char* buffer, size_t length) {
+
+    for (size_t i=0; i<length; i++){
+        SPI_read_byte(buffer+i);
+    }
+
+    SPI_release_slaves();
+    
+}
+

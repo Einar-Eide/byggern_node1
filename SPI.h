@@ -26,10 +26,11 @@ void SPI_select_slave(Slave slave);
 
 void SPI_write_byte(char cData);
 
-char SPI_read_byte(); //returner verdi??
+void SPI_read_byte(char* cData); //returner verdi??
 
-void SPI_write(); //write multiple bytes, array as input?
-void SPI_read(); //read multiple bytes, array as input?
+void SPI_write(char* buffer, size_t length); //write multiple bytes, array as input?
+
+void SPI_read(char* buffer, size_t length); //read multiple bytes, array as input?
 
 void SPI_release_slaves();
 

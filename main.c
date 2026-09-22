@@ -106,8 +106,12 @@ int main(void) {
     
 
 	SRAM_test();
+    
+    char testbyte[16] = "Hello World";
+    char testCHAR = 50;
 
-    char testbyte = 0x2b;
+    char* p_testbyte = &testbyte[0];
+
 
     SPI_master_init();
     
@@ -127,9 +131,14 @@ int main(void) {
         //get_direction(&x, &y, &x1, &y1);
 
         //get_analog_position(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
+
+        SPI_read(testbyte, sizeof(testbyte));
         
-        SPI_write_byte(testbyte);
-        _delay_us(10);
+
+        printf("read data: %s\n\r", testbyte);
+        
+        SPI_write(testbyte, 5);
+        _delay_us(100);
 
 		/*PORTA = (1<<0);
 		_delay_ms(10);
@@ -147,4 +156,5 @@ int main(void) {
 
     }
 }
+
 
