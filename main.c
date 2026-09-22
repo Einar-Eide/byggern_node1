@@ -8,6 +8,7 @@
 
 #include "UART.h"
 #include "ADC.h"
+#include "SPI.h"
 
 
 void SRAM_test(void)
@@ -96,7 +97,7 @@ int main(void) {
     volatile uint8_t joy_y_min;
     volatile uint8_t joy_y_max;
 
-    calibrate_joy(&joy_x_min, &joy_x_max, &joy_y_min, &joy_y_max);
+    //calibrate_joy(&joy_x_min, &joy_x_max, &joy_y_min, &joy_y_max);
 
     printf("Finnished calibration of joystick!\n\r");
     
@@ -105,6 +106,11 @@ int main(void) {
     
 
 	SRAM_test();
+
+    char testbyte = 0x2b;
+
+    SPI_master_init();
+    
 
     /* Replace with your application code */
     while (1) 
@@ -116,12 +122,14 @@ int main(void) {
         uint8_t x1 = 0;
         uint8_t y1 = 0;
 
-        get_position(&x, &y, &x1, &y1);
-        printf("x-positions: %d\t%d", x, y);
+        //get_position(&x, &y, &x1, &y1);
+        //printf("x-positions: %d\t%d", x, y);
         //get_direction(&x, &y, &x1, &y1);
 
-        get_analog_position(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
+        //get_analog_position(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
         
+        SPI_write_byte(testbyte);
+        _delay_us(10);
 
 		/*PORTA = (1<<0);
 		_delay_ms(10);
