@@ -9,7 +9,7 @@
 #include "UART.h"
 #include "ADC.h"
 #include "SPI.h"
-
+#include "OLED.h"
 
 void SRAM_test(void)
 {
@@ -99,10 +99,10 @@ int main(void) {
 
     //calibrate_joy(&joy_x_min, &joy_x_max, &joy_y_min, &joy_y_max);
 
-    printf("Finnished calibration of joystick!\n\r");
+    printf("Finished calibration of joystick!\n\r");
     
-    printf("joy_x min: %d\t\max: %d\n\r", joy_x_min, joy_x_max);
-    printf("joy_y min: %d\t\max: %d\n\r", joy_y_min, joy_y_max);
+    // printf("joy_x min: %d\t\max: %d\n\r", joy_x_min, joy_x_max);
+    // printf("joy_y min: %d\t\max: %d\n\r", joy_y_min, joy_y_max);
     
 
 	SRAM_test();
@@ -114,7 +114,38 @@ int main(void) {
 
 
     SPI_master_init();
+
+    OLED_init();
+
+    // OLED_set_pixel(1,0,1);
+    // OLED_set_pixel(0,1,1);
+
     
+    // _delay_ms(1000);
+    OLED_go_to_line(0x00);
+    OLED_go_to_column(25);
+    SPI_select_slave(OLED);
+
+    
+    // PORTB |= (1<<OLED_DC);
+    // unsigned char c = 0x0F;
+    // SPI_read_byte(&c);
+
+    // printf("fra screen: %d", c);
+
+
+    //Test av printe funkjson på oled skjermen
+    // OLED_print_char('H');
+    OLED_printf("Hello World!");
+    OLED_go_to_line(0x32);
+    OLED_go_to_column(35);
+    OLED_printf("Goodnight:)");
+    OLED_go_to_line(0x64);
+    OLED_go_to_column(58);
+    OLED_printf("<3");
+
+
+    //OLED_send_command(0xA4);
 
     /* Replace with your application code */
     while (1) 
@@ -132,12 +163,12 @@ int main(void) {
 
         //get_analog_position(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
 
-        SPI_read(testbyte, sizeof(testbyte));
+        //SPI_read(testbyte, sizeof(testbyte));
         
 
-        printf("read data: %s\n\r", testbyte);
+        //printf("read data: %d\n\r", testbyte[0]);
         
-        SPI_write(testbyte, 5);
+        //SPI_write(testbyte, 5);
         _delay_us(100);
 
 		/*PORTA = (1<<0);

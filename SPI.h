@@ -13,7 +13,7 @@
 #define SPI_SCK DDB7
 #define SPI_IOBOARD_SS DDB4
 #define SPI_OLED_SS DDB3
-#define SPI_CAN_SS DDB2
+#define SPI_CAN_SS DDB1
 
 
 typedef enum {IOBOARD, OLED, CAN} Slave;
