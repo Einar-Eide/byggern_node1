@@ -98,7 +98,6 @@ int main(void) {
 
     calibrate_joy(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
 
-
     printf("Finnished calibration of joystick!\n\r");
     
     printf("joy_x min: %d\t\max: %d\n\r", *joy_x_min, *joy_x_max);
@@ -118,7 +117,10 @@ int main(void) {
         uint8_t y1 = 0;
 
         get_position(&x, &y, &x1, &y1);
-        get_direction(&x, &y, &x1, &y1);
+        printf("x-positions: %d\t%d", x, y);
+        //get_direction(&x, &y, &x1, &y1);
+
+        //get_analog_position(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
         
 
 		/*PORTA = (1<<0);

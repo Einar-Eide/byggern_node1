@@ -40,6 +40,28 @@ void get_position(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uin
         }   
     }
 
+void get_analog_position( volatile uint8_t *joy_x_min,  volatile  uint8_t *joy_x_max,  volatile  uint8_t *joy_y_min,  volatile  uint8_t *joy_y_max){
+    
+    uint8_t joy_x = 0;
+    uint8_t joy_y = 0;
+
+    uint8_t sli_x = 0;
+    uint8_t sli_y = 0;
+
+
+    get_position(&joy_x, &joy_y, &sli_x, &sli_y);
+    
+    uint8_t x_range = *joy_x_max - *joy_x_min;
+    uint8_t y_range = *joy_y_max - *joy_y_min;
+
+    int analog_x = -90 + 180/x_range * (joy_x - *joy_x_min);
+    int analog_y = -90 + 180/y_range * (joy_y - *joy_y_min);
+
+    printf("Analoge verdier: %d %d\n\r", analog_x, analog_y);
+
+}
+
+
 void get_direction(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uint8_t *sli_x, volatile uint8_t *sli_y) {
 
     Dir dir_joy_x = NEUTRAL;
@@ -92,8 +114,8 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     uint8_t sli_x = 0;
     uint8_t sli_y = 0;
 
-    uint8_t neutral_joy_x = 0;
-    uint8_t neutral_joy_y = 0;
+    uint32_t neutral_joy_x = 0;
+    uint32_t neutral_joy_y = 0;
 
     uint8_t callibration_samples = 100;
     uint16_t hold_delay_ms = 1000; 
@@ -168,7 +190,7 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     // ###########################
 
     // down
-    printf("Move joyStick to the DOWN\n\r");
+    printf("Move joyStick DOWN\n\r");
     
     while (joy_y > 100) {
         get_position(&joy_x, &joy_y, &sli_x, &sli_y);
@@ -189,7 +211,7 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
 
     // up
 
-    printf("Move joyStick to the UP\n\r");
+    printf("Move joyStick UP\n\r");
     
     while (joy_y < 200) {
         get_position(&joy_x, &joy_y, &sli_x, &sli_y);
