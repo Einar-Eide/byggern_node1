@@ -91,17 +91,17 @@ int main(void) {
     TCCR3B = (1<<CS30) | (1<<WGM32);
 
     
-    volatile uint8_t *joy_x_min;
-    volatile uint8_t *joy_x_max;
-    volatile uint8_t *joy_y_min;
-    volatile uint8_t *joy_y_max;
+    volatile uint8_t joy_x_min;
+    volatile uint8_t joy_x_max;
+    volatile uint8_t joy_y_min;
+    volatile uint8_t joy_y_max;
 
-    calibrate_joy(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
+    calibrate_joy(&joy_x_min, &joy_x_max, &joy_y_min, &joy_y_max);
 
     printf("Finnished calibration of joystick!\n\r");
     
-    printf("joy_x min: %d\t\max: %d\n\r", *joy_x_min, *joy_x_max);
-    printf("joy_y min: %d\t\max: %d\n\r", *joy_y_min, *joy_y_max);
+    printf("joy_x min: %d\t\max: %d\n\r", joy_x_min, joy_x_max);
+    printf("joy_y min: %d\t\max: %d\n\r", joy_y_min, joy_y_max);
     
 
 	SRAM_test();
@@ -120,7 +120,7 @@ int main(void) {
         printf("x-positions: %d\t%d", x, y);
         //get_direction(&x, &y, &x1, &y1);
 
-        //get_analog_position(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
+        get_analog_position(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
         
 
 		/*PORTA = (1<<0);

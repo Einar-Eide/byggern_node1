@@ -40,7 +40,7 @@ void get_position(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uin
         }   
     }
 
-void get_analog_position( volatile uint8_t *joy_x_min,  volatile  uint8_t *joy_x_max,  volatile  uint8_t *joy_y_min,  volatile  uint8_t *joy_y_max){
+void get_analog_position( volatile uint8_t joy_x_min,  volatile  uint8_t joy_x_max,  volatile  uint8_t joy_y_min,  volatile  uint8_t joy_y_max){
     
     uint8_t joy_x = 0;
     uint8_t joy_y = 0;
@@ -51,11 +51,20 @@ void get_analog_position( volatile uint8_t *joy_x_min,  volatile  uint8_t *joy_x
 
     get_position(&joy_x, &joy_y, &sli_x, &sli_y);
     
-    uint8_t x_range = *joy_x_max - *joy_x_min;
-    uint8_t y_range = *joy_y_max - *joy_y_min;
+    int x_range = joy_x_max - joy_x_min;
+    int y_range = joy_y_max - joy_y_min;
 
-    int analog_x = -90 + 180/x_range * (joy_x - *joy_x_min);
-    int analog_y = -90 + 180/y_range * (joy_y - *joy_y_min);
+    int16_t analog_x = -90 + (180 * (float)(joy_x - joy_x_min))/x_range;
+    int16_t analog_y = -90 + (180 * (float)(joy_y - joy_y_min))/y_range;
+
+    //Sikrer at posisjonen aldri kan bli større enn 90 eller mindre enn -90 selv med upresis kalibrering
+    if (analog_x < -90) {analog_x = -90;}   
+    if (analog_x > 90) {analog_x = 90;}
+    if (analog_y < -90) {analog_y = -90;}   
+    if (analog_y > 90) {analog_y = 90;}
+
+
+    //printf("joy_y: %d\t\tjoy_y_min: %d\t\ty_range: %d\n\r", joy_y, joy_y_min, y_range);
 
     printf("Analoge verdier: %d %d\n\r", analog_x, analog_y);
 
@@ -118,11 +127,14 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     uint32_t neutral_joy_y = 0;
 
     uint8_t callibration_samples = 100;
-    uint16_t hold_delay_ms = 1000; 
+    uint16_t hold_delay_ms = 0; 
+
+
+    printf("joy_x: %d\n\r", joy_x);
 
     get_position(&joy_x, &joy_y, &sli_x, &sli_y);
     
-
+    printf("joy_x: %d\n\r", joy_x);
 
     // ###########################
     //  Callibrate joy_x
@@ -147,16 +159,17 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     
     while (joy_x > 100) {
         get_position(&joy_x, &joy_y, &sli_x, &sli_y);
+        _delay_ms(10);
     }
 
     printf("Hold!\n\r");
     _delay_ms(hold_delay_ms);
-    
-  
+
     *joy_x_min = joy_x;
 
     for(int i=0; i<callibration_samples; i++){
         get_position(&joy_x, &joy_y, &sli_x, &sli_y); 
+        _delay_ms(10);
         
         if (*joy_x_min > joy_x) {
             *joy_x_min = joy_x;
@@ -178,7 +191,8 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
 
     for(int i=0; i<callibration_samples; i++){
         get_position(&joy_x, &joy_y, &sli_x, &sli_y);   
-        
+        _delay_ms(10);
+
         if (*joy_x_max < joy_x) {
             *joy_x_max = joy_x;
         }
@@ -194,6 +208,7 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     
     while (joy_y > 100) {
         get_position(&joy_x, &joy_y, &sli_x, &sli_y);
+        _delay_ms(10);
     }
 
     printf("Hold!\n\r");
@@ -203,6 +218,7 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
 
     for(int i=0; i<callibration_samples; i++){
         get_position(&joy_x, &joy_y, &sli_x, &sli_y);   
+        _delay_ms(10);
         
         if (*joy_y_min > joy_y) {
             *joy_y_min = joy_y;
@@ -215,6 +231,7 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     
     while (joy_y < 200) {
         get_position(&joy_x, &joy_y, &sli_x, &sli_y);
+        _delay_ms(10);
     }
 
     printf("Hold!\n\r");
@@ -224,7 +241,8 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
 
     for(int i=0; i<callibration_samples; i++){
         get_position(&joy_x, &joy_y, &sli_x, &sli_y);   
-        
+        _delay_ms(10);
+
         if (*joy_y_max < joy_y) {
             *joy_y_max = joy_y;
         }
