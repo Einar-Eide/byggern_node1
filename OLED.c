@@ -1,5 +1,8 @@
 #include "OLED.h"
 
+uint16_t cursor_column_position = 0;
+
+
 void OLED_init(){
     DDRB |= (1<<OLED_DC);
 
@@ -14,6 +17,8 @@ void OLED_init(){
     SPI_release_slaves();
     OLED_clear_dispay();
 
+    OLED_go_to(0,0);
+
 }
 
 void OLED_send_command(char cmd) {
@@ -27,15 +32,23 @@ void OLED_send_command(char cmd) {
     SPI_release_slaves();
 }
 
-void OLED_go_to_line(uint8_t line) {
-    OLED_send_command(0xB0 | (0x07 & line)); // Go to first page + page
+void OLED_go_to_page(uint8_t page) {
+    OLED_send_command(0xB0 | (0x07 & page)); // Go to first page + page
 }
 
 
 void OLED_go_to_column(uint8_t column) {
     OLED_send_command(0x0F & column);
     OLED_send_command(0x10 | (column >> 4));
+
+    cursor_column_position = column;
 }
+
+void OLED_go_to(uint8_t column, uint8_t row){
+    OLED_go_to_page(row);
+    OLED_go_to_column(column);
+}
+
 
 void OLED_send_data(char data){
 
@@ -53,7 +66,7 @@ void OLED_send_data(char data){
 
 void OLED_clear_dispay(){ //clears display
     for(int j = 0; j < 8; j++){
-        OLED_go_to_line(j);
+        OLED_go_to_page(j);
         OLED_go_to_column(0);
         for (int i = 0; i < 128; i++){
             OLED_send_data(0x00);
@@ -61,27 +74,97 @@ void OLED_clear_dispay(){ //clears display
 }
 
 
-void OLED_set_pixel(char x, char y, char value){
-    OLED_go_to_line(y/8);
-    OLED_go_to_column(x);
-
-    uint8_t row_in_page = y%8;
-    
-    OLED_send_data(value<<row_in_page);
-}
-
 void OLED_print_char(char c) {
     for(uint8_t i = 0; i < 5; i++) {
         OLED_send_data(pgm_read_byte(&font5[c - 32][i]));
     }
 }
 
+
+size_t strlen(char *str) {
+    int c = 0;
+
+    // Loop until the null terminator '\0' is reached
+    while (str[c] != '\0') {
+        c++;
+    }
+    return c;
+}
+
+
 void OLED_printf(char *str){
     while (*str){
         OLED_print_char(*str);
         OLED_send_data(0x00); //mellomrom
         str++;
-    } 
+    }
+}
+
+void OLED_printf_2(char *str, textpos pos){
+
+    size_t px_length = strlen(str) * 6; //5+1
+    uint16_t start_column = cursor_column_position;
+    uint16_t print_start_column = start_column;
+    
+    switch (pos)
+    {
+    case OLED_CENTER:
+        print_start_column -= px_length / 2;
+        break;
+    case OLED_LEFT:
+        print_start_column -= px_length;
+        break;
+
+    case OLED_RIGHT:
+        // stay
+        break;
+    }
+
+    OLED_go_to_column(print_start_column);
+
+    while (*str){
+        OLED_print_char(*str);
+        OLED_send_data(0x00); //mellomrom
+        str++;
+    }
+
+    OLED_go_to_column(start_column);
 }
 
 
+void OLED_printf_1(char *str, textpos pos, uint8_t page){
+    switch (pos)
+    {
+    case OLED_LEFT:
+        OLED_go_to(0,page);
+        break;
+    
+    case OLED_CENTER:
+        uint8_t centercol = (128 - (strlen(str) * 6))/2;
+        OLED_go_to(centercol, page);
+        break;
+
+    case OLED_RIGHT:
+        uint8_t rightcol = (128 - (strlen(str)*6));
+        OLED_go_to(rightcol, page);
+        break;
+        
+    default:
+        break;
+    }
+
+    while (*str){
+        OLED_print_char(*str);
+        OLED_send_data(0x00); //mellomrom
+        str++;
+    } 
+
+}
+
+
+
+void OLED_print_emoji(uint8_t emoji){
+    for(uint8_t i = 0; i < 8; i++) {
+        OLED_send_data(pgm_read_byte(&emoji_font[emoji][i]));
+    }
+}

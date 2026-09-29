@@ -7,9 +7,10 @@
 
 
 #include "UART.h"
-#include "ADC.h"
+#include "IO_inputs.h"
 #include "SPI.h"
 #include "OLED.h"
+#include "menu.h"
 
 void SRAM_test(void)
 {
@@ -97,7 +98,7 @@ int main(void) {
     volatile uint8_t joy_y_min;
     volatile uint8_t joy_y_max;
 
-    //calibrate_joy(&joy_x_min, &joy_x_max, &joy_y_min, &joy_y_max);
+    calibrate_joy(&joy_x_min, &joy_x_max, &joy_y_min, &joy_y_max);
 
     printf("Finished calibration of joystick!\n\r");
     
@@ -122,9 +123,7 @@ int main(void) {
 
     
     // _delay_ms(1000);
-    OLED_go_to_line(0x00);
-    OLED_go_to_column(25);
-    SPI_select_slave(OLED);
+    //SPI_select_slave(OLED);
 
     
     // PORTB |= (1<<OLED_DC);
@@ -136,13 +135,54 @@ int main(void) {
 
     //Test av printe funkjson på oled skjermen
     // OLED_print_char('H');
-    OLED_printf("Hello World!");
-    OLED_go_to_line(0x32);
-    OLED_go_to_column(35);
-    OLED_printf("Goodnight:)");
-    OLED_go_to_line(0x64);
-    OLED_go_to_column(58);
-    OLED_printf("<3");
+    while (1) 
+    {
+        OLED_clear_dispay();
+        OLED_go_to_page(0x00);
+        OLED_go_to_column(128/2);
+        OLED_printf_2("Hello World!", OLED_CENTER);
+        OLED_go_to_page(0x32);
+        OLED_printf_2("Goodnight:)", OLED_CENTER);
+        OLED_go_to_page(0x64);
+        OLED_printf_2("<3", OLED_CENTER);
+        
+        OLED_go_to(0, 0x96);
+
+        for(int i=0; i<12; i++){
+            OLED_print_emoji(i);
+            OLED_send_data(0x00);
+        }
+        
+
+
+        _delay_ms(2000);
+
+        OLED_clear_dispay();
+        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
+        OLED_printf_1("   _________        ", OLED_CENTER,11);
+        OLED_printf_1(" __/|_||_||  \\___    ", OLED_CENTER,12);
+        OLED_printf_1("/___          ___\\", OLED_CENTER, 13);
+        OLED_printf_1("  O             O   ", OLED_CENTER, 14);
+
+        _delay_ms(2000);
+
+
+        OLED_clear_dispay();
+        while (1)
+        {
+            MENU_update();
+            //printf("Button value: %d", button_pressed());
+        
+        }
+        
+
+
+    }
+   
+ 
+   
+    
+
 
 
     //OLED_send_command(0xA4);

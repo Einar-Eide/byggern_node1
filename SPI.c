@@ -36,7 +36,7 @@ void SPI_select_slave(Slave slave){
 
     case CAN:
         //pin PB2 low
-        PORTB &= ~(1<<PORTB1);
+        PORTB &= ~(1<<PORTB0);
         break;
 
     default:

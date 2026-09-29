@@ -1,4 +1,4 @@
-#include "ADC.h"
+#include "IO_inputs.h"
 
 
 void get_position(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uint8_t *sli_x, volatile uint8_t * sli_y) {
@@ -27,18 +27,17 @@ void get_position(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uin
 
 /**/
 
-    typedef enum {LEFT, RIGHT, UP, DOWN, NEUTRAL} Dir;
 
-    const char *dir_to_string(Dir dir){    
-    switch (dir) {
-        case LEFT:    return "LEFT";
-        case RIGHT:   return "RIGHT";
-        case UP:      return "UP";
-        case DOWN:    return "DOWN";
-        case NEUTRAL: return "NEUTRAL";
-        default:      return "UNKNOWN";
-        }   
-    }
+const char *dir_to_string(Dir dir){    
+switch (dir) {
+    case JOY_LEFT:    return "LEFT";
+    case JOY_RIGHT:   return "RIGHT";
+    case JOY_UP:      return "UP";
+    case JOY_DOWN:    return "DOWN";
+    case JOY_NEUTRAL: return "NEUTRAL";
+    default:          return "UNKNOWN";
+    }   
+}
 
 void get_analog_position( volatile uint8_t joy_x_min,  volatile  uint8_t joy_x_max,  volatile  uint8_t joy_y_min,  volatile  uint8_t joy_y_max){
     
@@ -73,36 +72,36 @@ void get_analog_position( volatile uint8_t joy_x_min,  volatile  uint8_t joy_x_m
 
 void get_direction(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uint8_t *sli_x, volatile uint8_t *sli_y) {
 
-    Dir dir_joy_x = NEUTRAL;
-    Dir dir_joy_y = NEUTRAL;
-    Dir dir_sli_x = NEUTRAL;
-    Dir dir_sli_y = NEUTRAL;
+    Dir dir_joy_x = JOY_NEUTRAL;
+    Dir dir_joy_y = JOY_NEUTRAL;
+    Dir dir_sli_x = JOY_NEUTRAL;
+    Dir dir_sli_y = JOY_NEUTRAL;
 
     int neutral_pos_x = 160;
     int neutral_pos_y = 160;
 
-    if (*joy_x < neutral_pos_x-5) {
-        dir_joy_x = LEFT;       
-    } else if (*joy_x > neutral_pos_x + 5) {
-        dir_joy_x = RIGHT;
+    if (*joy_x < neutral_pos_x-10) {
+        dir_joy_x = JOY_LEFT;       
+    } else if (*joy_x > neutral_pos_x + 10) {
+        dir_joy_x = JOY_RIGHT;
     }   
     
-    if (*joy_y < neutral_pos_y-5) {
-        dir_joy_y = DOWN;       
-    } else if (*joy_y > neutral_pos_y+5) {
-        dir_joy_y = UP;
+    if (*joy_y < neutral_pos_y-10) {
+        dir_joy_y = JOY_DOWN;       
+    } else if (*joy_y > neutral_pos_y+10) {
+        dir_joy_y = JOY_UP;
     }
     
     if (*sli_x < 122) {
-        dir_sli_x = DOWN;       
+        dir_sli_x = JOY_DOWN;       
     } else if (*sli_x > 132) {
-        dir_sli_x = UP;
+        dir_sli_x = JOY_UP;
     }   
     
      if (*sli_y < 122) {
-        dir_sli_y = LEFT;       
+        dir_sli_y = JOY_LEFT;       
     } else if (*sli_y > 132) {
-        dir_sli_y = RIGHT;
+        dir_sli_y = JOY_RIGHT;
     }
 
     printf("Dir joy x: %s, Dir joy y: %s, Dir sli x: %s, Dir sli y: %s\n\r",
@@ -112,6 +111,39 @@ void get_direction(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile ui
        dir_to_string(dir_sli_y));
 
 }
+
+
+void get_joy_direction(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile Dir *dir_joy_x, volatile Dir *dir_joy_y ){
+
+    get_position(joy_x, joy_y, NULL, NULL);
+    int neutral_pos_x = 160;
+    int neutral_pos_y = 160;
+
+    if (*joy_x < neutral_pos_x-20) {
+        *dir_joy_x = JOY_LEFT;       
+    } else if (*joy_x > neutral_pos_x + 20) {
+        *dir_joy_x = JOY_RIGHT;
+    } else {*dir_joy_x = JOY_NEUTRAL;}
+      
+    
+    if (*joy_y < neutral_pos_y-20) {
+        *dir_joy_y = JOY_DOWN;       
+    } else if (*joy_y > neutral_pos_y + 20) {
+        *dir_joy_y = JOY_UP;
+    } else {*dir_joy_y = JOY_NEUTRAL;}
+
+      /*printf("Dir joy x: %s, Dir joy y: %s\n\r",
+       dir_to_string(*dir_joy_x),
+       dir_to_string(*dir_joy_y));*/
+      
+    
+}
+
+
+
+
+
+
 
 void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, uint8_t *joy_y_max){
     printf("Starting Calibration for Joystick!\n\r");
@@ -126,7 +158,7 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     uint32_t neutral_joy_x = 0;
     uint32_t neutral_joy_y = 0;
 
-    uint8_t callibration_samples = 100;
+    uint8_t callibration_samples = 25;
     uint16_t hold_delay_ms = 0; 
 
 
@@ -257,3 +289,22 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     printf("joy_y min: %d\t\tmax: %d\n\r", (*joy_y_min), (*joy_y_max));
     
 } 
+
+
+uint8_t button_down(){
+    return (PINB & 0b00000010) != 2;
+}
+
+uint8_t button_pressed(){
+    static uint8_t prev_button_state = 0;
+    uint8_t button_state = button_down();
+    
+    uint8_t pressed = 0;
+
+    if (button_state && (prev_button_state != 1) ) {
+        pressed = 1;
+    }
+
+    prev_button_state = button_state;
+    return pressed;
+}
