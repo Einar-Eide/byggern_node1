@@ -11,6 +11,7 @@
 #include "SPI.h"
 #include "OLED.h"
 #include "menu.h"
+#include "MCP2515.h"
 
 void SRAM_test(void)
 {
@@ -98,7 +99,7 @@ int main(void) {
     volatile uint8_t joy_y_min;
     volatile uint8_t joy_y_max;
 
-    calibrate_joy(&joy_x_min, &joy_x_max, &joy_y_min, &joy_y_max);
+    //calibrate_joy();
 
     printf("Finished calibration of joystick!\n\r");
     
@@ -132,6 +133,7 @@ int main(void) {
 
     // printf("fra screen: %d", c);
 
+    mcp2515_init();
 
     //Test av printe funkjson på oled skjermen
     // OLED_print_char('H');
@@ -155,7 +157,7 @@ int main(void) {
         
 
 
-        _delay_ms(2000);
+        _delay_ms(500);
 
         OLED_clear_dispay();
         OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
@@ -164,10 +166,28 @@ int main(void) {
         OLED_printf_1("/___          ___\\", OLED_CENTER, 13);
         OLED_printf_1("  O             O   ", OLED_CENTER, 14);
 
-        _delay_ms(2000);
-
+        _delay_ms(500);
 
         OLED_clear_dispay();
+
+
+        uint8_t data = 0;
+        //mcp2515_load_tx_buffer(0, 171);
+        //mcp2515_rts(0);
+        mcp2515_read(0x31, &data);
+        //mcp2515_read_rx_buffer(0, &data);
+
+        //mcp2515_load_tx_buffer(0, 0b10101000);
+        
+
+        uint8_t txb0ctrl;
+        mcp2515_rts(0);
+        mcp2515_read(MCP_TXB0CTRL, &txb0ctrl);
+
+        printf("Data read: %d\n\r", data);
+        printf("Data txb0ctrl: %d\n\r", txb0ctrl);
+
+
         while (1)
         {
             MENU_update();
@@ -197,7 +217,7 @@ int main(void) {
         uint8_t x1 = 0;
         uint8_t y1 = 0;
 
-        //get_position(&x, &y, &x1, &y1);
+        //get_position_raw(&x, &y, &x1, &y1);
         //printf("x-positions: %d\t%d", x, y);
         //get_direction(&x, &y, &x1, &y1);
 

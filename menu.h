@@ -13,7 +13,7 @@ void MENU_update();
 
 void MENU_draw();
 
-void MENU_scroll(uint8_t *pos, volatile uint8_t *joy_x, volatile uint8_t *joy_y,  volatile Dir *dir_joy_x, volatile Dir *dir_joy_y);
+void MENU_scroll();
 
 
 

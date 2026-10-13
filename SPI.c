@@ -20,6 +20,8 @@ void SPI_master_init(){
 
 void SPI_select_slave(Slave slave){
 
+    SPI_release_slaves();
+
     switch(slave)
     {
     case IOBOARD:
@@ -45,7 +47,7 @@ void SPI_select_slave(Slave slave){
 }
 
 void SPI_release_slaves(){
-    PORTB |= (1<<PORTB3) | (1<<PORTB1) | (1<<PORTB4);
+    PORTB |= (1<<PORTB3) | (1<<PORTB4) | (1<<PORTB0);
 }
 
 

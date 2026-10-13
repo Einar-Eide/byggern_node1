@@ -1,5 +1,5 @@
 # List all source files to be compiled; separate with space
-SOURCE_FILES := main.c UART.c IO_inputs.c SPI.c OLED.c fonts.c menu.c CAN.c
+SOURCE_FILES := main.c UART.c IO_inputs.c SPI.c OLED.c fonts.c menu.c MCP2515.c
 
 # Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
 PROGRAM_WITH_JTAG := yes

@@ -1,15 +1,19 @@
 #include "IO_inputs.h"
 
+uint8_t g_joy_x_min = 70;
+uint8_t g_joy_x_max = 255;
+uint8_t g_joy_y_min = 70;
+uint8_t g_joy_y_max = 255;
 
-void get_position(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uint8_t *sli_x, volatile uint8_t * sli_y) {
+
+
+void get_position_raw(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uint8_t *sli_x, volatile uint8_t * sli_y) {
 
     volatile char* p_ADC = (char *)0x1200;
 
     *p_ADC = 0;
-    //_delay_us(1); 
 
-
-    _delay_us(5000);
+    _delay_us(100); // random value ?? var 5000 før
 
     *joy_x = *p_ADC;
     *joy_y = *p_ADC;
@@ -17,16 +21,8 @@ void get_position(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uin
     *sli_x = *p_ADC;
     *sli_y = *p_ADC; 
 
-    
-
     //printf("verdier: %d %d %d %d\n\r", *joy_x, *joy_y, *sli_x, *sli_y);
-
-    
-
 }
-
-/**/
-
 
 const char *dir_to_string(Dir dir){    
 switch (dir) {
@@ -39,37 +35,27 @@ switch (dir) {
     }   
 }
 
-void get_analog_position( volatile uint8_t joy_x_min,  volatile  uint8_t joy_x_max,  volatile  uint8_t joy_y_min,  volatile  uint8_t joy_y_max){
+void get_analog_position(int* analog_x, int* analog_y){
     
     uint8_t joy_x = 0;
     uint8_t joy_y = 0;
 
-    uint8_t sli_x = 0;
-    uint8_t sli_y = 0;
-
-
-    get_position(&joy_x, &joy_y, &sli_x, &sli_y);
+    get_position_raw(&joy_x, &joy_y, NULL, NULL);
     
-    int x_range = joy_x_max - joy_x_min;
-    int y_range = joy_y_max - joy_y_min;
+    int x_range = g_joy_x_max - g_joy_x_min;
+    int y_range = g_joy_y_max - g_joy_y_min;
 
-    int16_t analog_x = -90 + (180 * (float)(joy_x - joy_x_min))/x_range;
-    int16_t analog_y = -90 + (180 * (float)(joy_y - joy_y_min))/y_range;
+    *analog_x = -100 + (200 * (float)(joy_x - g_joy_x_min))/x_range;
+    *analog_y = -100 + (200 * (float)(joy_y - g_joy_y_min))/y_range;
 
-    //Sikrer at posisjonen aldri kan bli større enn 90 eller mindre enn -90 selv med upresis kalibrering
-    if (analog_x < -90) {analog_x = -90;}   
-    if (analog_x > 90) {analog_x = 90;}
-    if (analog_y < -90) {analog_y = -90;}   
-    if (analog_y > 90) {analog_y = 90;}
-
-
-    //printf("joy_y: %d\t\tjoy_y_min: %d\t\ty_range: %d\n\r", joy_y, joy_y_min, y_range);
-
-    printf("Analoge verdier: %d %d\n\r", analog_x, analog_y);
-
+    //Sikrer at posisjonen aldri kan bli større enn 100 eller mindre enn -100 selv med upresis kalibrering
+    if (*analog_x < -100) {*analog_x = -100;}   
+    if (*analog_x > 100) {*analog_x = 100;}
+    if (*analog_y < -100) {*analog_y = -100;}   
+    if (*analog_y > 100) {*analog_y = 100;}
 }
 
-
+// not needed ??
 void get_direction(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uint8_t *sli_x, volatile uint8_t *sli_y) {
 
     Dir dir_joy_x = JOY_NEUTRAL;
@@ -104,39 +90,35 @@ void get_direction(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile ui
         dir_sli_y = JOY_RIGHT;
     }
 
-    printf("Dir joy x: %s, Dir joy y: %s, Dir sli x: %s, Dir sli y: %s\n\r",
-       dir_to_string(dir_joy_x),
-       dir_to_string(dir_joy_y),
-       dir_to_string(dir_sli_x),
-       dir_to_string(dir_sli_y));
-
+    //printf("Dir joy x: %s, Dir joy y: %s, Dir sli x: %s, Dir sli y: %s\n\r", dir_to_string(dir_joy_x), dir_to_string(dir_joy_y), dir_to_string(dir_sli_x), dir_to_string(dir_sli_y));
 }
 
 
-void get_joy_direction(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile Dir *dir_joy_x, volatile Dir *dir_joy_y ){
+/**
+ * returns the direction of the joystick as a Dri variable for x and y direction
+ */
+void get_joy_direction(volatile Dir *dir_joy_x, volatile Dir *dir_joy_y ){
+    
+    int joy_x;
+    int joy_y;
+    get_analog_position(&joy_x, &joy_y);
+    
+    int neutral_pos_x = 0;
+    int neutral_pos_y = 0;
 
-    get_position(joy_x, joy_y, NULL, NULL);
-    int neutral_pos_x = 160;
-    int neutral_pos_y = 160;
-
-    if (*joy_x < neutral_pos_x-20) {
+    if (joy_x < neutral_pos_x - 80) {
         *dir_joy_x = JOY_LEFT;       
-    } else if (*joy_x > neutral_pos_x + 20) {
+    } else if (joy_x > neutral_pos_x + 80) {
         *dir_joy_x = JOY_RIGHT;
     } else {*dir_joy_x = JOY_NEUTRAL;}
-      
     
-    if (*joy_y < neutral_pos_y-20) {
+    if (joy_y < neutral_pos_y - 80) {
         *dir_joy_y = JOY_DOWN;       
-    } else if (*joy_y > neutral_pos_y + 20) {
+    } else if (joy_y > neutral_pos_y + 80) {
         *dir_joy_y = JOY_UP;
     } else {*dir_joy_y = JOY_NEUTRAL;}
 
-      /*printf("Dir joy x: %s, Dir joy y: %s\n\r",
-       dir_to_string(*dir_joy_x),
-       dir_to_string(*dir_joy_y));*/
-      
-    
+    //printf("Dir joy x: %s, Dir joy y: %s\n\r", dir_to_string(*dir_joy_x), dir_to_string(*dir_joy_y));
 }
 
 
@@ -145,7 +127,7 @@ void get_joy_direction(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatil
 
 
 
-void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, uint8_t *joy_y_max){
+void calibrate_joy(){
     printf("Starting Calibration for Joystick!\n\r");
     
     // set up values
@@ -164,7 +146,7 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
 
     printf("joy_x: %d\n\r", joy_x);
 
-    get_position(&joy_x, &joy_y, &sli_x, &sli_y);
+    get_position_raw(&joy_x, &joy_y, &sli_x, &sli_y);
     
     printf("joy_x: %d\n\r", joy_x);
 
@@ -177,7 +159,7 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     printf("Hold joystick in NEUTRAL\n\r");
 
     for(int i=0; i<callibration_samples; i++){
-        get_position(&joy_x, &joy_y, &sli_x, &sli_y); 
+        get_position_raw(&joy_x, &joy_y, &sli_x, &sli_y); 
     
         neutral_joy_x += joy_x;
         neutral_joy_y += joy_y; 
@@ -190,21 +172,21 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     printf("Move joyStick to the LEFT\n\r");
     
     while (joy_x > 100) {
-        get_position(&joy_x, &joy_y, &sli_x, &sli_y);
+        get_position_raw(&joy_x, &joy_y, &sli_x, &sli_y);
         _delay_ms(10);
     }
 
     printf("Hold!\n\r");
     _delay_ms(hold_delay_ms);
 
-    *joy_x_min = joy_x;
+    g_joy_x_min = joy_x;
 
     for(int i=0; i<callibration_samples; i++){
-        get_position(&joy_x, &joy_y, &sli_x, &sli_y); 
+        get_position_raw(&joy_x, &joy_y, &sli_x, &sli_y); 
         _delay_ms(10);
         
-        if (*joy_x_min > joy_x) {
-            *joy_x_min = joy_x;
+        if (g_joy_x_min > joy_x) {
+            g_joy_x_min = joy_x;
         }
     }
     
@@ -213,20 +195,20 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     printf("Move joyStick to the RIGHT\n\r");
     
     while (joy_x < 200) {
-        get_position(&joy_x, &joy_y, &sli_x, &sli_y);
+        get_position_raw(&joy_x, &joy_y, &sli_x, &sli_y);
     }
 
     printf("Hold!\n\r");
     _delay_ms(hold_delay_ms);
 
-    *joy_x_max = joy_x;
+    g_joy_x_max = joy_x;
 
     for(int i=0; i<callibration_samples; i++){
-        get_position(&joy_x, &joy_y, &sli_x, &sli_y);   
+        get_position_raw(&joy_x, &joy_y, &sli_x, &sli_y);   
         _delay_ms(10);
 
-        if (*joy_x_max < joy_x) {
-            *joy_x_max = joy_x;
+        if (g_joy_x_max < joy_x) {
+            g_joy_x_max = joy_x;
         }
     }
     
@@ -239,21 +221,21 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     printf("Move joyStick DOWN\n\r");
     
     while (joy_y > 100) {
-        get_position(&joy_x, &joy_y, &sli_x, &sli_y);
+        get_position_raw(&joy_x, &joy_y, &sli_x, &sli_y);
         _delay_ms(10);
     }
 
     printf("Hold!\n\r");
     _delay_ms(hold_delay_ms);
 
-    *joy_y_min = joy_y;
+    g_joy_y_min = joy_y;
 
     for(int i=0; i<callibration_samples; i++){
-        get_position(&joy_x, &joy_y, &sli_x, &sli_y);   
+        get_position_raw(&joy_x, &joy_y, &sli_x, &sli_y);   
         _delay_ms(10);
         
-        if (*joy_y_min > joy_y) {
-            *joy_y_min = joy_y;
+        if (g_joy_y_min > joy_y) {
+            g_joy_y_min = joy_y;
         }
     }
 
@@ -262,21 +244,21 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
     printf("Move joyStick UP\n\r");
     
     while (joy_y < 200) {
-        get_position(&joy_x, &joy_y, &sli_x, &sli_y);
+        get_position_raw(&joy_x, &joy_y, &sli_x, &sli_y);
         _delay_ms(10);
     }
 
     printf("Hold!\n\r");
     _delay_ms(hold_delay_ms);
 
-    *joy_y_max = joy_y;
+    g_joy_y_max = joy_y;
 
     for(int i=0; i<callibration_samples; i++){
-        get_position(&joy_x, &joy_y, &sli_x, &sli_y);   
+        get_position_raw(&joy_x, &joy_y, &sli_x, &sli_y);   
         _delay_ms(10);
 
-        if (*joy_y_max < joy_y) {
-            *joy_y_max = joy_y;
+        if (g_joy_y_max < joy_y) {
+            g_joy_y_max = joy_y;
         }
     }
 
@@ -285,8 +267,8 @@ void calibrate_joy(uint8_t *joy_x_min, uint8_t *joy_x_max, uint8_t *joy_y_min, u
 
 
     printf("Finnished calibration of joystick!\n\r");
-    printf("joy_x min: %d\t\tmax: %d\n\r", (*joy_x_min), (*joy_x_max));
-    printf("joy_y min: %d\t\tmax: %d\n\r", (*joy_y_min), (*joy_y_max));
+    printf("joy_x min: %d\t\tmax: %d\n\r", (g_joy_x_min), (g_joy_x_max));
+    printf("joy_y min: %d\t\tmax: %d\n\r", (g_joy_y_min), (g_joy_y_max));
     
 } 
 
