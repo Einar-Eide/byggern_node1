@@ -41,4 +41,4 @@ void OLED_printf_1(char *str, textpos pos, uint8_t line);
 
 void OLED_print_emoji(uint8_t emoji);
 
-void OLED_funny_graphics();
+void OLED_print_car_animation();

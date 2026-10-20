@@ -10,9 +10,9 @@
 #include <avr/pgmspace.h>
 
 // Font 8x8 - Large
-extern const unsigned char font8[95][8] PROGMEM;
+//extern const unsigned char font8[95][8] PROGMEM;
 extern const unsigned char font5[95][5] PROGMEM;
-extern const unsigned char font4[95][4] PROGMEM;
+//extern const unsigned char font4[95][4] PROGMEM;
 extern const unsigned char emoji_font[12][8] PROGMEM;  // Written by AI
 
 #endif

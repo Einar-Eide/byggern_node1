@@ -13,6 +13,9 @@ void mcp2515_read( uint8_t address, uint8_t* data );
 void mcp2515_write_byte(uint8_t address, uint8_t data);
 void mcp2515_write(uint8_t address, char* buffer, size_t length);
 
+void mcp2515_send_byte(uint16_t id, uint8_t data);
+void mcp2515_read_byte(uint16_t id, uint8_t data);
+
 void mcp2515_load_tx_buffer(uint8_t TXn, uint8_t data);
 void mcp2515_rts(uint8_t TXn);
 
@@ -80,8 +83,20 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define MCP_CANINTF		0x2C
 #define MCP_EFLG		0x2D
 #define MCP_TXB0CTRL	0x30
+#define MCP_TXB0SIDH    0x31
+#define MCP_TXB0SIDL    0x32
+#define MCP_TXB0DLC     0x35
+#define MCP_TXB0D0      0x36
 #define MCP_TXB1CTRL	0x40
+#define MCP_TXB1SIDH    0x41
+#define MCP_TXB1SIDL    0x42
+#define MCP_TXB1DLC     0x45
+#define MCP_TXB1D0      0x46
 #define MCP_TXB2CTRL	0x50
+#define MCP_TXB2SIDH    0x51
+#define MCP_TXB2SIDL    0x52
+#define MCP_TXB2DLC     0x55
+#define MCP_TXB2D0      0x56
 #define MCP_RXB0CTRL	0x60
 #define MCP_RXB0SIDH	0x61
 #define MCP_RXB1CTRL	0x70
@@ -148,6 +163,7 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define SJW2            0x40
 #define SJW3            0x80
 #define SJW4            0xC0
+#define BRP3            0x03
 
 
 // CNF2 Register Values
@@ -156,6 +172,8 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define SAMPLE_1X       0x00
 #define SAMPLE_3X       0x40
 
+#define PS1_7           0x30
+#define PRSEG_2         0x01
 
 // CNF3 Register Values
 
@@ -163,6 +181,7 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define SOF_DISABLE		0x00
 #define WAKFIL_ENABLE	0x40
 #define WAKFIL_DISABLE	0x00
+#define PS2_6           0x05
 
 
 // CANINTF Register Bits

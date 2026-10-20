@@ -168,3 +168,124 @@ void OLED_print_emoji(uint8_t emoji){
         OLED_send_data(pgm_read_byte(&emoji_font[emoji][i]));
     }
 }
+
+void OLED_print_car_animation(){
+        _delay_ms(500);
+
+        OLED_clear_dispay();
+        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
+        OLED_printf_1("     _________        ", OLED_CENTER,11);
+        OLED_printf_1(" __/|_||_||  \\___    ", OLED_CENTER,12);
+        OLED_printf_1("/___          ___\\", OLED_CENTER, 13);
+        OLED_printf_1("  O            O   ", OLED_CENTER, 14);
+        
+
+        _delay_ms(500);
+
+        OLED_clear_dispay();
+
+        
+        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
+        OLED_printf_1("       _________        ", OLED_CENTER,11);
+        OLED_printf_1("   __/|_||_||  \\___    ", OLED_CENTER,12);
+        OLED_printf_1("  /___          ___\\", OLED_CENTER, 13);
+        OLED_printf_1("    O           O   ", OLED_CENTER, 14);
+        
+
+        _delay_ms(500);
+
+        OLED_clear_dispay();
+
+        
+        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
+        OLED_printf_1("        _________        ", OLED_CENTER,11);
+        OLED_printf_1("     __/|_||_||  \\___    ", OLED_CENTER,12);
+        OLED_printf_1("    /___          ___\\", OLED_CENTER, 13);
+        OLED_printf_1("      O           O   ", OLED_CENTER, 14);
+        
+
+        _delay_ms(500);
+
+        OLED_clear_dispay();
+
+        
+        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
+        OLED_printf_1("         _________        ", OLED_CENTER,11);
+        OLED_printf_1("      __/|_||_||  \\___    ", OLED_CENTER,12);
+        OLED_printf_1("      /___          ___\\", OLED_CENTER, 13);
+        OLED_printf_1("        O            O   ", OLED_CENTER, 14);
+        
+
+        _delay_ms(500);
+
+        OLED_clear_dispay();
+
+        
+        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
+        OLED_printf_1("           _________        ", OLED_CENTER,11);
+        OLED_printf_1("        __/|_||_||  \\___    ", OLED_CENTER,12);
+        OLED_printf_1("       /___          ___\\", OLED_CENTER, 13);
+        OLED_printf_1("          O          O   ", OLED_CENTER, 14);
+        
+
+        _delay_ms(500);
+        
+        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
+        OLED_printf_1("     _________        ", OLED_CENTER,11);
+        OLED_printf_1(" __/|_||_||  \\___    ", OLED_CENTER,12);
+        OLED_printf_1("/___          ___\\", OLED_CENTER, 13);
+        OLED_printf_1("  O            O   ", OLED_CENTER, 14);
+        
+
+        _delay_ms(500);
+
+        OLED_clear_dispay();
+
+        
+        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
+        OLED_printf_1("       _________        ", OLED_CENTER,11);
+        OLED_printf_1("   __/|_||_||  \\___    ", OLED_CENTER,12);
+        OLED_printf_1("  /___          ___\\", OLED_CENTER, 13);
+        OLED_printf_1("    O           O   ", OLED_CENTER, 14);
+        
+
+        _delay_ms(500);
+
+        OLED_clear_dispay();
+
+        
+        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
+        OLED_printf_1("        _________        ", OLED_CENTER,11);
+        OLED_printf_1("     __/|_||_||  \\___    ", OLED_CENTER,12);
+        OLED_printf_1("    /___          ___\\", OLED_CENTER, 13);
+        OLED_printf_1("      O           O   ", OLED_CENTER, 14);
+        
+
+        _delay_ms(500);
+
+        OLED_clear_dispay();
+
+        
+        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
+        OLED_printf_1("         _________        ", OLED_CENTER,11);
+        OLED_printf_1("      __/|_||_||  \\___    ", OLED_CENTER,12);
+        OLED_printf_1("      /___          ___\\", OLED_CENTER, 13);
+        OLED_printf_1("        O            O   ", OLED_CENTER, 14);
+        
+
+        _delay_ms(500);
+
+        OLED_clear_dispay();
+
+        
+        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
+        OLED_printf_1("           _________        ", OLED_CENTER,11);
+        OLED_printf_1("        __/|_||_||  \\___    ", OLED_CENTER,12);
+        OLED_printf_1("       /___          ___\\", OLED_CENTER, 13);
+        OLED_printf_1("          O          O   ", OLED_CENTER, 14);
+
+        
+        _delay_ms(500);
+
+        OLED_clear_dispay();
+}

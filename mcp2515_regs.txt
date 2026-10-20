@@ -1,0 +1,104 @@
+CANCTRL
+    Can control register
+    All bits R/W 
+    bit 5-7 Request operation mode bits 
+    bit 4 Abort pending transmissions
+    bit 3 one-shot mode (1 try transmission only once)
+    bit 3 CLKOUT pin enable 
+    bit 1-0 CLKOUT prescaler bits
+    
+CNF1 - config 1 
+    All R/W 
+    bit 7-6 SJW sync jump width length bits (1-4 x Tq)
+    bit 5-0 BRP Baud rate prescaler bits 
+
+CNF2 - config 2 (read page 42-43 for context)
+    All R/W
+    bit 7 BTLMODE determine how PS2 is set
+    bit 6 SAM choose 3 or 1 bus line sample per sample point
+    bit 5-3 PHSEG1 (len) set PS1 length PS1 = (len+1) x Tq
+    bit 2-0 PRSEG (len) set prop segment length PropSeg = (len + 1) x Tq
+
+CNF3 - config 3 
+    All R/W 
+    bit 7 Start of frame (SOF) signal bit (1 for SOF on CLKOUT)
+    NB: must set CANCTRL.CLKEN = 1 for SOF on CLKOUT
+    bit 6 Wake up filter enable (disable this?)
+    bit 2-0 PS2 Length bit if CNF2 bit 7 == 1
+        PS2 = (len + 1) x Tq, must be minimum 2Tq 
+        
+CANSTAT
+    Can status register
+    Read only register!
+    bit 7-5 Operation mode bits
+    bit 3-1 Interrupt flags (set by mcp)
+    4 & 0 unimplemented
+
+TXBnSIDH
+    Transmit buffer n standard identifier high
+    Alle bits R/W 
+    Dette er bit 10-3 av id
+    bit 7 -> SID10
+    bit 0 -> SID3
+
+TXBnSIDL
+    Transmit buffer n standard identifier low
+    setter de siste 3 lsb av id + konfigurerer extended id 
+    bit 7-5 -> id 2-0
+    bit 3 extended id enable bit (1 -> ext, 0 -> std)
+    bit 1-0 extended id bits 
+
+RXBnSIDH/RXBnSIDL
+    RXBnSIDH:
+    receive buffer n standard identifier register high
+    bit 7-0 standard identifer bits
+
+    RXBnSIDL:
+    receive buffer n stabdard identifier register low
+    bit 7-5 standard identifier bits
+    bit 4 standard frame remote transmit request bit (bit 3 must be 0)
+    bit 3 extended identifier flag bit 
+    bit 2 unimplemented 
+    bit 1-0 extended identifier bits
+
+
+CANINTE/CANINTF
+    CANINTE:
+    CAN interrupt enable register
+    All bits R/W
+    bit 7 message interrupt enable bit
+    bit 6 wake up interrupt enable bit
+    bit 5 error interrupt enable bit
+    bit 4-2 transmit buffer (interrupt becomes empty)
+    bit 1-0 receive buffer (interrupt when bit 1 is 1 when message is received in RXB1/same for 0)
+    
+    CANINTF:
+    CAN interrupt flag register
+    All bits R/W
+    bit 7 message error interrupt flag bit
+    bit 6 wake up interrupt flag bit
+    bit 5 error interrupt flag bit
+    bit 4-2 transmit buffer (interrupt becomes empty)
+    bit 1-0 receive buffer (interrupt when bit 1 is 1 when message is received in RXB1/same for 0)
+    
+
+TXBnDLC/RXBnDLC
+    TXBnDLC:
+    Transmit buffer n data length code register
+    5-4 & 7 unimplemented
+    bit 6 remote transmission request bit
+    bit 3-0 data length code bits
+
+    RXBnDLC:
+    Receive buffer n data length code register
+    bit 7 unimplemented
+    bit 6 extended frame remote transmission request bit
+    bit 4 & 5 reserved bit 0 & 1
+    bit 3-0 data length code bits
+
+TODO:
+    Set CNF 1-3 in init 
+    Create struct for frame setup (ID, extend?, DLC, DATA)
+
+
+

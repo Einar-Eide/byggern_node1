@@ -13,6 +13,7 @@
 #include "menu.h"
 #include "MCP2515.h"
 
+/*
 void SRAM_test(void)
 {
     volatile char *ext_ram = (char *)0x1800; // Start address for the SRAM
@@ -61,7 +62,7 @@ void SRAM_test(void)
     printf("SRAM test completed with\n%4d errors in write phase and\n%4d errors in retrieval phase\n\r\n\r",
            write_errors, retrieval_errors);
 }
-
+*/
 
 int main(void) {
 	
@@ -80,6 +81,10 @@ int main(void) {
 
 	*/
 	uart_init( MYUBRR );
+    printf("TEST1?");
+
+    
+    // ???
 	MCUCR |= (1<<SRE);
 
 	
@@ -92,8 +97,9 @@ int main(void) {
 	// config timer
     TCCR3A = (1<<COM3A0);
     TCCR3B = (1<<CS30) | (1<<WGM32);
-
     
+    
+
     volatile uint8_t joy_x_min;
     volatile uint8_t joy_x_max;
     volatile uint8_t joy_y_min;
@@ -101,13 +107,13 @@ int main(void) {
 
     //calibrate_joy();
 
-    printf("Finished calibration of joystick!\n\r");
+    // printf("Finished calibration of joystick!\n\r");
     
     // printf("joy_x min: %d\t\max: %d\n\r", joy_x_min, joy_x_max);
     // printf("joy_y min: %d\t\max: %d\n\r", joy_y_min, joy_y_max);
     
-
-	SRAM_test();
+    //Sram testen tar for mye plass i minne, så vi kjører den ikke hver gang
+	//SRAM_test();
     
     char testbyte[16] = "Hello World";
     char testCHAR = 50;
@@ -133,12 +139,16 @@ int main(void) {
 
     // printf("fra screen: %d", c);
 
-    mcp2515_init();
+    printf("Test\n\r");
 
+    
+    mcp2515_init();
+    
     //Test av printe funkjson på oled skjermen
     // OLED_print_char('H');
     while (1) 
     {
+        //Test display OLED print function
         OLED_clear_dispay();
         OLED_go_to_page(0x00);
         OLED_go_to_column(128/2);
@@ -155,59 +165,61 @@ int main(void) {
             OLED_send_data(0x00);
         }
         
-
-
-        _delay_ms(500);
-
-        OLED_clear_dispay();
-        OLED_printf_1("Kjor pent!", OLED_CENTER, 10);
-        OLED_printf_1("   _________        ", OLED_CENTER,11);
-        OLED_printf_1(" __/|_||_||  \\___    ", OLED_CENTER,12);
-        OLED_printf_1("/___          ___\\", OLED_CENTER, 13);
-        OLED_printf_1("  O             O   ", OLED_CENTER, 14);
-
-        _delay_ms(500);
-
-        OLED_clear_dispay();
+        // OLED_print_car_animation();
 
 
         uint8_t data = 0;
         //mcp2515_load_tx_buffer(0, 171);
         //mcp2515_rts(0);
-        mcp2515_read(0x31, &data);
+        //mcp2515_read(0x31, &data);
         //mcp2515_read_rx_buffer(0, &data);
 
         //mcp2515_load_tx_buffer(0, 0b10101000);
-        
 
-        uint8_t txb0ctrl;
-        mcp2515_rts(0);
-        mcp2515_read(MCP_TXB0CTRL, &txb0ctrl);
 
         printf("Data read: %d\n\r", data);
-        printf("Data txb0ctrl: %d\n\r", txb0ctrl);
+    
+
+        // Test read-write:
+
+        // read inital txb0ctrl
+        //uint8_t txb0ctrl;
+        //mcp2515_read(MCP_TXB0CTRL, &txb0ctrl);
+
+        //printf("Data txb0ctrl: %d\n\r", txb0ctrl);
+
+        // write to txb0ctrl
+        //mcp2515_bitmod(MCP_TXB0CTRL, 1<<1, 1<<1);
+        //mcp2515_bitmod(MCP_TXB0CTRL, 1<<3, 1<<3);
+
+        // read final txb0ctrl
+        //mcp2515_read(MCP_TXB0CTRL, &txb0ctrl);
+
+        //printf("Data txb0ctrl: %d\n\r", txb0ctrl); // should be 3?
+
+        //test send data oppg 5
+        uint16_t id = 1322;
+        uint8_t test_data = 100;
+        mcp2515_send_byte(id, test_data);
+        mcp2515_read_byte(id, test_data);
 
 
         while (1)
         {
+            //printf("TEST!\n\r");
             MENU_update();
             //printf("Button value: %d", button_pressed());
         
         }
         
 
-
+        
     }
    
- 
-   
-    
-
-
 
     //OLED_send_command(0xA4);
 
-    /* Replace with your application code */
+    // Replace with your application code
     while (1) 
     {
 
@@ -219,7 +231,7 @@ int main(void) {
 
         //get_position_raw(&x, &y, &x1, &y1);
         //printf("x-positions: %d\t%d", x, y);
-        //get_direction(&x, &y, &x1, &y1);
+        //get_direction(&x, &MCP2515.c:181:27y, &x1, &y1);
 
         //get_analog_position(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
 
@@ -231,10 +243,10 @@ int main(void) {
         //SPI_write(testbyte, 5);
         _delay_us(100);
 
-		/*PORTA = (1<<0);
+		PORTA = (1<<0);
 		_delay_ms(10);
 		PORTA = (0<<0);
-		_delay_ms(10);*/
+		_delay_ms(10);
 
 		// uart_send('a');
 		//char X = uart_read();
@@ -246,6 +258,8 @@ int main(void) {
 
 
     }
+
+    
 }
 
 
