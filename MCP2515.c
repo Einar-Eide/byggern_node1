@@ -115,32 +115,21 @@ void mcp2515_send_byte(uint16_t id, uint8_t data) {
     
 }
 
-void mcp2515_read_byte(uint16_t id, uint8_t data){
-        // request to send
-    mcp2515_bitmod(MCP_TXB0CTRL, 1<<3, 1<<3);
+void mcp2515_receive_byte(uint16_t *id, uint8_t* data){
 
     _delay_us(500);
 
-    uint8_t TXB0CTRL = 0;
-    mcp2515_read(MCP_TXB0CTRL, &TXB0CTRL);
-    printf("TXB0CTRL: %d\n\n\r", TXB0CTRL);
-    
-    //check receive interrupt flags
-    uint8_t RX0_buffer = 0;
-    uint8_t RX1_buffer = 0;
-    mcp2515_read(0x66, &RX0_buffer);
-    mcp2515_read(0x76, &RX1_buffer);
-    printf("RX0_buffer: %d\n\n\r", RX0_buffer);
-    printf("RX1_buffer: %d\n\n\r", RX1_buffer);
+    uint8_t RXB0CTRL;
+    mcp2515_read(MCP_RXB0CTRL, &RXB0CTRL);
 
-    uint8_t rx0_data = 91;
-    uint8_t rx1_data = 91;
+    // les kun hvis man har mottatt ny verdig? Hvordan gjør man dette?
 
-    mcp2515_read_rx_buffer(0, &rx0_data);
+    mcp2515_read_rx_buffer(0, &id, &data);
  
-
-    printf("Read can message %d\n\n\r", rx0_data);
+    printf("Read can message %d\n\n\r", data);
 }
+
+
 
 void mcp2515_load_tx_buffer(uint8_t TXn, uint8_t data) {
     SPI_select_slave(CAN);
@@ -186,20 +175,27 @@ void mcp2515_rts(uint8_t TXn){
 }
 
 
-void mcp2515_read_rx_buffer(uint8_t RXn, uint8_t *data) {
+void mcp2515_read_rx_buffer(uint8_t RXn, uint16_t* id, uint8_t *data) {
     SPI_select_slave(CAN);
+    uint8_t idu;
+    uint8_t idl;
     switch(RXn){
         case 0:
-            SPI_write_byte(0b10010010);
+            SPI_write_byte(MCP_READ_RX0);
             SPI_read_byte(data);
+            mcp2515_read_byte(MCP_RXB0SIDH, &idu);
+            mcp2515_read_byte(MCP_RXB0SIDL, &idl);
             break;
         case 1:
             SPI_write_byte(MCP_READ_RX1);
             SPI_read_byte(data);
+            mcp2515_read_byte(MCP_RXB1SIDH, &idu);
+            mcp2515_read_byte(MCP_RXB1SIDL, &idl);
             break;
 
     }
     SPI_release_slaves();
+    id = (idu<<3) | (idl>>5);
 }
 
 // typedef struct {

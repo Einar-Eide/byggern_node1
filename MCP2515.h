@@ -14,12 +14,12 @@ void mcp2515_write_byte(uint8_t address, uint8_t data);
 void mcp2515_write(uint8_t address, char* buffer, size_t length);
 
 void mcp2515_send_byte(uint16_t id, uint8_t data);
-void mcp2515_read_byte(uint16_t id, uint8_t data);
+void mcp2515_receive_byte(uint16_t *id, uint8_t *data);
 
 void mcp2515_load_tx_buffer(uint8_t TXn, uint8_t data);
 void mcp2515_rts(uint8_t TXn);
 
-void mcp2515_read_rx_buffer(uint8_t RXn, uint8_t* data);
+void mcp2515_read_rx_buffer(uint8_t RXn, uint16_t* id, uint8_t* data);
 
 void mcp2515_bitmod(uint8_t address, uint8_t mask, uint8_t data);
 void mcp2515_reset();
@@ -99,8 +99,10 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define MCP_TXB2D0      0x56
 #define MCP_RXB0CTRL	0x60
 #define MCP_RXB0SIDH	0x61
+#define MCP_RXB0SIDL	0x62
 #define MCP_RXB1CTRL	0x70
 #define MCP_RXB1SIDH	0x71
+#define MCP_RXB1SIDL	0x72
 
 
 #define MCP_TX_INT		0x1C		// Enable all transmit interrupts
@@ -129,7 +131,7 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define MCP_RTS_ALL		0x87
 
 #define MCP_READ_RX0	0x90
-#define MCP_READ_RX1	0x94
+#define MCP_READ_RX1    0x90
 
 #define MCP_READ_STATUS	0xA0
 
