@@ -106,7 +106,7 @@ int main(void) {
     volatile uint8_t joy_y_min;
     volatile uint8_t joy_y_max;
 
-    //calibrate_joy();
+    calibrate_joy();
 
     // printf("Finished calibration of joystick!\n\r");
     
@@ -229,10 +229,10 @@ int main(void) {
             //MENU_update();
             //printf("Button value: %d", button_pressed());
 
-            int joy_pos_x;
-            int joy_pos_y;
+            int8_t joy_pos_x;
+            int8_t joy_pos_y;
 
-            joy_get_analog_position(&joy_pos_x, &joy_pos_y);
+            get_position_raw(&joy_pos_x, &joy_pos_y, NULL, NULL);
             
             mcp2515_send_byte(JOY_X_ID, (int8_t)joy_pos_x);
             _delay_ms(10); 

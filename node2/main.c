@@ -4,6 +4,7 @@
 #include "uart.h"
 #include "can.h"
 #include "CAN_ID.h"
+#include "PWM.h"
 
 #define F_CPU 84000000
 
@@ -26,7 +27,7 @@ int main()
 
     //Uncomment after including uart above
     uart_init(F_CPU, 9600);
-    printf("Hello World2\r\n"); //what? \r MÅ vær før \n
+    printf("Hello World4\r\n"); //what? \r MÅ vær før \n
 
     CanInit init = {};
     init.phase1 = 6;
@@ -35,13 +36,19 @@ int main()
     init.propag = 1;
     init.sjw = 0;
     init.smp = 0;
-   
+
+    // init functions:
     can_init(init, 0);
+    pwm_init();
+
+    printf("Hello World3\r\n"); //what? \r MÅ vær før \n
+
 
     CanMsg message = {};
     
-    int8_t joy_x;
-    int8_t joy_y;
+    uint8_t joy_x;
+    uint8_t joy_y;
+
 
     while(1) {
         uint8_t received = can_rx(&message);
@@ -49,13 +56,14 @@ int main()
         if (received) {
 
             if (message.id == JOY_X_ID ) {
-                joy_x = (int8_t)message.byte[0];
+                joy_x = message.byte[0];
+                pwm_set_duty_cycle_from_byte(joy_x);
 
                 //printf("Joystick  X  %d\r\n", joy_x);
 
             }
             else if (message.id == JOY_Y_ID) {
-                joy_y = (int8_t)message.byte[0];
+                joy_y = message.byte[0];
 
                 //printf("Joystick y:  %d\r\n", joy_y);
             }
@@ -63,23 +71,7 @@ int main()
             printf("Joystick x: %d, y: %d\r\n", joy_x, joy_y);
            
         }
-    }
-    
-
-    // can_init()
-    // can_message_send()
-    // can_data_receive()
-    // can_int_vect()
-    // // Tip: Structs could be useful for CAN messages
-    // struct can_message {
-    // uint16_t id ;
-    // char data_length ;
-    // char data [8];
-    // };
-
-    while (1)
-    {
-        /* code */
+        
     }
     
 }

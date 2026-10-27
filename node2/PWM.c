@@ -1,0 +1,106 @@
+#include "PWM.h"
+
+void pwm_init() {
+
+    //REG_PMC_PCER0 = (1 << 13); //Enable periphreal clock PIOC
+    //REG_PMC_PCER1 = (1 << 4); // Enable peripheral clock PWM
+   
+
+    // PMC (key "PMC" = 0x504D43)
+    //PMC->PMC_WPMR = 0x504D4300;            // WPEN = 0, key = 0x504D43
+
+    // PIO (key "PIO" = 0x50494F)
+    //PIOC->PIO_WPMR = 0x50494F00;           // WPEN = 0
+
+    // PWM (key "PWM" = 0x50574D). WPCMD = 0 disables software protection
+    // for the register groups selected by WPRG0..WPRG5
+    //PWM->PWM_WPCR = (0x50574Du << 8) | 0x0 /* WPCMD=0 */ | 0xFC /* WPRG0..WPRG5 */;
+
+    
+    // Set pin to output  
+    //REG_PIOC_OER = (PIO_OER_P18) | (PIO_OER_P19);
+
+    // Set pin to perifilar
+    /*REG_PIOC_PDR = (PIO_PDR_P18) | (PIO_PDR_P19);
+
+    // set pin to perifilar B 
+    REG_PIOC_ABSR |= (PIO_ABSR_P18) | (PIO_ABSR_P19);
+    REG_PIOC_PDR   = PIO_PDR_P18 | PIO_PDR_P19;
+
+    //PWM->PWM_DIS = PWM_DIS_CHID0;                          // PWM Disable 
+    PWM->PWM_CLK = PWM_CLK_DIVB(1) | PWM_CLK_DIVA(1) ;       // PWM Clock register. Set a prescaler
+    PWM->PWM_CH_NUM[5].PWM_CMR = PWM_CMR_CPRE_MCK_DIV_32 | PWM_CMR_CPOL;           // ???
+    PWM->PWM_CH_NUM[5].PWM_CPRD = CPRD;                       // Set PWM period
+    PWM->PWM_CH_NUM[5].PWM_CDTY = PWM_MID_CDTY_SERVO;     // Set PWM inital duty cycle
+
+    PWM->PWM_CH_NUM[6].PWM_CMR  = PWM_CMR_CPRE_MCK_DIV_32 | PWM_CMR_CPOL;
+    PWM->PWM_CH_NUM[6].PWM_CPRD = PWM_CPRD_SERVO;
+    PWM->PWM_CH_NUM[6].PWM_CDTY = PWM_MID_CDTY_SERVO;
+
+
+    // ??
+    //REG_PWM_SCM = (1<<PWM_SCM_UPDM_MODE1) | (1 << PWM_SCM_SYNC5);  
+    //PWM->REG_PWM_SCUP = PWM_SCUP_UPR(0);// PWM_SCUP_UPR = 0?
+
+    // Enable PWM
+    PWM->PWM_ENA = PWM_ENA_CHID5 | PWM_ENA_CHID6 ;*/
+
+
+    // Klokke til PIOC og PWM
+    PMC->PMC_PCER0 = (1 << ID_PIOC);
+    PMC->PMC_PCER1 = (1 << (ID_PWM - 32));
+
+    // ########################################
+    //         HERFRA FUNGERER DET!??
+    // ########################################
+
+    // PC19 (PWMH5) og PC18 (PWMH6) -> periferi B, gi pinnene til periferien
+    PIOC->PIO_ABSR |= PIO_ABSR_P18 | PIO_ABSR_P19;
+    PIOC->PIO_PDR   = PIO_PDR_P18 | PIO_PDR_P19;
+   
+    // Kanal 5 (pinne 44)
+    PWM->PWM_CH_NUM[5].PWM_CMR  = PWM_CMR_CPRE_MCK_DIV_32 | PWM_CMR_CPOL;
+    PWM->PWM_CH_NUM[5].PWM_CPRD = PWM_CPRD_SERVO;
+    PWM->PWM_CH_NUM[5].PWM_CDTY = PWM_MID_CDTY_SERVO;
+
+    // Kanal 6 (pinne 45)
+    PWM->PWM_CH_NUM[6].PWM_CMR  = PWM_CMR_CPRE_MCK_DIV_32 | PWM_CMR_CPOL;
+    PWM->PWM_CH_NUM[6].PWM_CPRD = PWM_CPRD_SERVO;
+    PWM->PWM_CH_NUM[6].PWM_CDTY = PWM_MID_CDTY_SERVO;
+
+    // Start begge kanalene
+    PWM->PWM_ENA = PWM_ENA_CHID5 | PWM_ENA_CHID6;
+}
+
+
+
+
+    void pwm_set_duty_cycle_cdty( uint32_t CDTY ) {
+
+        // clamp (max and min value safe for servo)
+        if (CDTY < PWM_MIN_CDTY_SERVO){
+            CDTY = PWM_MIN_CDTY_SERVO;
+        } else if ( CDTY > PWM_MAX_CDTY_SERVO) {
+            CDTY = PWM_MAX_CDTY_SERVO;
+        }
+
+        //update dutycycle
+        PWM->PWM_CH_NUM[5].PWM_CDTYUPD = CDTY;
+
+    }
+
+    void pwm_set_duty_cycle_from_byte( uint8_t b ) {
+
+        uint32_t cdty = PWM_MIN_CDTY_SERVO + ( (uint32_t)b * PWM_MIN_CDTY_SERVO) / 255; 
+        pwm_set_duty_cycle_cdty(cdty);
+
+    }
+
+
+void pwm_start() {
+
+}
+
+void pwm_stop() {
+    
+}
