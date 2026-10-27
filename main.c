@@ -12,6 +12,7 @@
 #include "OLED.h"
 #include "menu.h"
 #include "MCP2515.h"
+#include "CAN_ID.h"
 
 /*
 void SRAM_test(void)
@@ -145,7 +146,7 @@ int main(void) {
     mcp2515_init();
     
     //Test av printe funkjson på oled skjermen
-    // OLED_print_char('H');
+    // OLED_print_char('H');get_direction
     while (1) 
     {
         //Test display OLED print function
@@ -198,26 +199,46 @@ int main(void) {
         //printf("Data txb0ctrl: %d\n\r", txb0ctrl); // should be 3?
 
         //test send data oppg 5
-        uint16_t id = 1322;
-        uint8_t test_data = 100;
+        uint16_t id = 0b000000010;
+        uint8_t test_data = 200;
         uint16_t id_r = 0;
         uint8_t test_data_r = 0;
         
+        
+        mcp2515_write_byte(MCP_TXB0CTRL, 3 | (1<<3));
+
         mcp2515_send_byte(id, test_data);
-        mcp2515_receive_byte(&id_r, &test_data_r);
+        _delay_us(500); 
+        //mcp2515_receive_byte(&id_r, &test_data_r);
 
         printf("# RESULTS:\n\r");
         printf("id in:  %d data in  %d\n\r", id, test_data);
         printf("id out: %d data out %d\n\r", id_r, test_data_r);
-        printf("# END RESULTS:\n\r");
+        printf("# END RESULTS\n\r");
 
+        uint8_t ctrl_reg = 100;
+
+        
+        mcp2515_read_byte(MCP_TXB0CTRL, &ctrl_reg);
+
+        printf("%d\n\r", ctrl_reg);
 
         while (1)
         {
             //printf("TEST!\n\r");
-            MENU_update();
+            //MENU_update();
             //printf("Button value: %d", button_pressed());
-        
+
+            int joy_pos_x;
+            int joy_pos_y;
+
+            joy_get_analog_position(&joy_pos_x, &joy_pos_y);
+            
+            mcp2515_send_byte(JOY_X_ID, (int8_t)joy_pos_x);
+            _delay_ms(10); 
+            mcp2515_send_byte(JOY_Y_ID, (int8_t)joy_pos_y);
+            _delay_ms(10); 
+    
         }
         
 
@@ -239,9 +260,9 @@ int main(void) {
 
         //get_position_raw(&x, &y, &x1, &y1);
         //printf("x-positions: %d\t%d", x, y);
-        //get_direction(&x, &MCP2515.c:181:27y, &x1, &y1);
+        //joy_get_direction(&x, &MCP2515.c:181:27y, &x1, &y1);
 
-        //get_analog_position(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
+        //joy_get_analog_position(joy_x_min, joy_x_max, joy_y_min, joy_y_max);
 
         //SPI_read(testbyte, sizeof(testbyte));
         

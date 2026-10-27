@@ -35,7 +35,7 @@ switch (dir) {
     }   
 }
 
-void get_analog_position(int* analog_x, int* analog_y){
+void joy_get_analog_position(int* analog_x, int* analog_y){
     
     uint8_t joy_x = 0;
     uint8_t joy_y = 0;
@@ -56,7 +56,7 @@ void get_analog_position(int* analog_x, int* analog_y){
 }
 
 // not needed ??
-void get_direction(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uint8_t *sli_x, volatile uint8_t *sli_y) {
+void joy_get_direction(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uint8_t *sli_x, volatile uint8_t *sli_y) {
 
     Dir dir_joy_x = JOY_NEUTRAL;
     Dir dir_joy_y = JOY_NEUTRAL;
@@ -101,7 +101,7 @@ void get_joy_direction(volatile Dir *dir_joy_x, volatile Dir *dir_joy_y ){
     
     int joy_x;
     int joy_y;
-    get_analog_position(&joy_x, &joy_y);
+    joy_get_analog_position(&joy_x, &joy_y);
     
     int neutral_pos_x = 0;
     int neutral_pos_y = 0;

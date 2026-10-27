@@ -21,7 +21,7 @@ uint8_t mcp2515_init() {
     //mcp2515_write_byte(MCP_TXB0CTRL, )
 
 
-    mcp2515_write_byte(MCP_CANCTRL, MODE_LOOPBACK | CLKOUT_DISABLE);     // loopback mode
+    mcp2515_write_byte(MCP_CANCTRL, MODE_NORMAL | CLKOUT_DISABLE);     // normal mode
 
     return 0;
 }
@@ -69,6 +69,8 @@ void mcp2515_reset(){
     SPI_release_slaves();
 }
 
+
+
 uint8_t mcp2515_read_status(){
     char status;
 
@@ -81,7 +83,7 @@ uint8_t mcp2515_read_status(){
 }
 
 void mcp2515_send_byte(uint16_t id, uint8_t data) {
-    #define DEBUGGING_MCP2515_SEND_BYTE 1
+    #define DEBUGGING_MCP2515_SEND_BYTE 0
 
     // set ID
     mcp2515_write_byte(MCP_TXB0SIDH, id>>3);
@@ -112,12 +114,16 @@ void mcp2515_send_byte(uint16_t id, uint8_t data) {
         printf("read  %d\n\n\r", read_MCP_TXB0D0);
         
     }
+
+    // request to send
+    mcp2515_bitmod(MCP_TXB0CTRL, 1<<3, 1<<3);
+
+    //wait for send
+    _delay_us(500);
     
 }
 
 void mcp2515_receive_byte(uint16_t *id, uint8_t* data){
-
-    _delay_us(500);
 
     uint8_t RXB0CTRL;
     mcp2515_read_byte(MCP_RXB0CTRL, &RXB0CTRL);
@@ -176,25 +182,23 @@ void mcp2515_rts(uint8_t TXn){
 
 
 void mcp2515_read_rx_buffer(uint8_t RXn, uint16_t* id, uint8_t *data) {
-    SPI_select_slave(CAN);
+    //SPI_select_slave(CAN);
     uint8_t idu;
     uint8_t idl;
     switch(RXn){
         case 0:
-            SPI_write_byte(MCP_READ_RX0);
-            SPI_read_byte(data);
+            mcp2515_read_byte(MCP_RXB0D0,   data);
             mcp2515_read_byte(MCP_RXB0SIDH, &idu);
             mcp2515_read_byte(MCP_RXB0SIDL, &idl);
             break;
         case 1:
-            SPI_write_byte(MCP_READ_RX1);
-            SPI_read_byte(data);
+            mcp2515_read_byte(MCP_RXB1D0,   data);
             mcp2515_read_byte(MCP_RXB1SIDH, &idu);
             mcp2515_read_byte(MCP_RXB1SIDL, &idl);
             break;
 
     }
-    SPI_release_slaves();
+    //SPI_release_slaves();
     *id = (idu<<3) | (idl>>5);
 }
 
