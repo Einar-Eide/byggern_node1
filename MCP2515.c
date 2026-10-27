@@ -6,7 +6,7 @@ uint8_t mcp2515_init() {
     uint8_t value;
     mcp2515_reset();
     
-    mcp2515_read(MCP_CANSTAT, &value);
+    mcp2515_read_byte(MCP_CANSTAT, &value);
     if ( (value & MODE_MASK) != MODE_CONFIG ) {
         printf (" MCP2515 is NOT in configuration mode after reset !\n" );
         return 1;
@@ -27,7 +27,7 @@ uint8_t mcp2515_init() {
 }
 
 
-void mcp2515_read( uint8_t address, uint8_t* data ){
+void mcp2515_read_byte( uint8_t address, uint8_t* data ){
     SPI_select_slave(CAN);
     SPI_write_byte(MCP_READ);
     SPI_write_byte(address);
@@ -97,10 +97,10 @@ void mcp2515_send_byte(uint16_t id, uint8_t data) {
         uint8_t read_MCP_TXB0DLC; 
         uint8_t read_MCP_TXB0D0; 
 
-        mcp2515_read(MCP_TXB0SIDH, &read_MCP_TXB0SIDH);
-        mcp2515_read(MCP_TXB0SIDL, &read_MCP_TXB0SIDL);
-        mcp2515_read(MCP_TXB0DLC,  &read_MCP_TXB0DLC);
-        mcp2515_read(MCP_TXB0D0,   &read_MCP_TXB0D0);
+        mcp2515_read_byte(MCP_TXB0SIDH, &read_MCP_TXB0SIDH);
+        mcp2515_read_byte(MCP_TXB0SIDL, &read_MCP_TXB0SIDL);
+        mcp2515_read_byte(MCP_TXB0DLC,  &read_MCP_TXB0DLC);
+        mcp2515_read_byte(MCP_TXB0D0,   &read_MCP_TXB0D0);
 
         printf("wrote %d to MCP_TXB0SIDH\n\r", id>>3);
         printf("read  %d\n\n\r", read_MCP_TXB0SIDH);
@@ -120,11 +120,11 @@ void mcp2515_receive_byte(uint16_t *id, uint8_t* data){
     _delay_us(500);
 
     uint8_t RXB0CTRL;
-    mcp2515_read(MCP_RXB0CTRL, &RXB0CTRL);
+    mcp2515_read_byte(MCP_RXB0CTRL, &RXB0CTRL);
 
     // les kun hvis man har mottatt ny verdig? Hvordan gjør man dette?
 
-    mcp2515_read_rx_buffer(0, &id, &data);
+    mcp2515_read_rx_buffer(0, id, data);
  
     printf("Read can message %d\n\n\r", data);
 }
@@ -195,7 +195,7 @@ void mcp2515_read_rx_buffer(uint8_t RXn, uint16_t* id, uint8_t *data) {
 
     }
     SPI_release_slaves();
-    id = (idu<<3) | (idl>>5);
+    *id = (idu<<3) | (idl>>5);
 }
 
 // typedef struct {

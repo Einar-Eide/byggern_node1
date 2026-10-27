@@ -171,7 +171,7 @@ int main(void) {
         uint8_t data = 0;
         //mcp2515_load_tx_buffer(0, 171);
         //mcp2515_rts(0);
-        //mcp2515_read(0x31, &data);
+        //mcp2515_read_byte(0x31, &data);
         //mcp2515_read_rx_buffer(0, &data);
 
         //mcp2515_load_tx_buffer(0, 0b10101000);
@@ -184,7 +184,7 @@ int main(void) {
 
         // read inital txb0ctrl
         //uint8_t txb0ctrl;
-        //mcp2515_read(MCP_TXB0CTRL, &txb0ctrl);
+        //mcp2515_read_byte(MCP_TXB0CTRL, &txb0ctrl);
 
         //printf("Data txb0ctrl: %d\n\r", txb0ctrl);
 
@@ -193,15 +193,23 @@ int main(void) {
         //mcp2515_bitmod(MCP_TXB0CTRL, 1<<3, 1<<3);
 
         // read final txb0ctrl
-        //mcp2515_read(MCP_TXB0CTRL, &txb0ctrl);
+        //mcp2515_read_byte(MCP_TXB0CTRL, &txb0ctrl);
 
         //printf("Data txb0ctrl: %d\n\r", txb0ctrl); // should be 3?
 
         //test send data oppg 5
         uint16_t id = 1322;
         uint8_t test_data = 100;
+        uint16_t id_r = 0;
+        uint8_t test_data_r = 0;
+        
         mcp2515_send_byte(id, test_data);
-        mcp2515_read_byte(id, test_data);
+        mcp2515_receive_byte(&id_r, &test_data_r);
+
+        printf("# RESULTS:\n\r");
+        printf("id in:  %d data in  %d\n\r", id, test_data);
+        printf("id out: %d data out %d\n\r", id_r, test_data_r);
+        printf("# END RESULTS:\n\r");
 
 
         while (1)

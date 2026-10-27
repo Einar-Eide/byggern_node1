@@ -9,7 +9,7 @@
 
 uint8_t mcp2515_init();
 
-void mcp2515_read( uint8_t address, uint8_t* data );
+void mcp2515_read_byte( uint8_t address, uint8_t* data );
 void mcp2515_write_byte(uint8_t address, uint8_t data);
 void mcp2515_write(uint8_t address, char* buffer, size_t length);
 
