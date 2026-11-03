@@ -5,6 +5,8 @@
 #include "can.h"
 #include "CAN_ID.h"
 #include "PWM.h"
+#include "ADC.h"
+#include "game.h"
 
 #define F_CPU 84000000
 
@@ -40,6 +42,7 @@ int main()
     // init functions:
     can_init(init, 0);
     pwm_init();
+    adc_init();
 
     printf("Hello World3\r\n"); //what? \r MÅ vær før \n
 
@@ -48,6 +51,8 @@ int main()
     
     uint8_t joy_x;
     uint8_t joy_y;
+
+    uint8_t can_trigger_new_point = 0;
 
 
     while(1) {
@@ -68,10 +73,22 @@ int main()
                 //printf("Joystick y:  %d\r\n", joy_y);
             }
 
-            printf("Joystick x: %d, y: %d\r\n", joy_x, joy_y);
+            //printf("Joystick x: %d, y: %d\r\n", joy_x, joy_y);
+
            
         }
         
+        if (is_ir_diode_blocked()) {
+            printf("ir sensor is blocked! \r\n");
+            
+            if ( can_trigger_new_point ) {
+                printf("current score: %d\r\n", increase_points());
+                can_trigger_new_point = false;
+            } 
+        } else {
+            can_trigger_new_point = true;
+        }
+
     }
     
 }

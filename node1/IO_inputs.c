@@ -35,6 +35,31 @@ switch (dir) {
     }   
 }
 
+void joy_get_analog_positive_position(uint8_t* analog_x, uint8_t* analog_y){
+    
+    uint8_t joy_x = 0;
+    uint8_t joy_y = 0;
+
+    get_position_raw(&joy_x, &joy_y, NULL, NULL);
+    
+    int x_range = g_joy_x_max - g_joy_x_min;
+    int y_range = g_joy_y_max - g_joy_y_min;
+
+    int analog_x_tmp = (255 * (float)(joy_x - g_joy_x_min))/x_range;
+    int analog_y_tmp = (255 * (float)(joy_y - g_joy_y_min))/y_range;
+
+    //Sikrer at posisjonen aldri kan bli større enn 100 eller mindre enn -100 selv med upresis kalibrering
+    if (analog_x_tmp < 0)      { *analog_x = 0;     }   
+    else if (analog_x_tmp > 255)    { *analog_x = 255;   }
+    else                             { *analog_x = analog_x_tmp;   }
+    
+    if (analog_y_tmp < 0)      { *analog_y = 0;     }   
+    else if (analog_y_tmp > 255)    { *analog_y = 255;   }
+    else                             { *analog_y = analog_y_tmp;   }
+
+}
+
+
 void joy_get_analog_position(int* analog_x, int* analog_y){
     
     uint8_t joy_x = 0;

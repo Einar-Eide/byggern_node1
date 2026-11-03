@@ -10,7 +10,9 @@ SOURCE_FILES = \
 	main.c \
 	uart.c \
 	can.c \
-	PWM.c 
+	PWM.c \
+	ADC.c \
+	game.c
 #   filename1.c \
 #   filename2.c \
 #	filenameN.c

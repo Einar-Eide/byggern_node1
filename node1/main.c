@@ -229,14 +229,14 @@ int main(void) {
             //MENU_update();
             //printf("Button value: %d", button_pressed());
 
-            int8_t joy_pos_x;
-            int8_t joy_pos_y;
+            uint8_t joy_pos_x;
+            uint8_t joy_pos_y;
 
-            get_position_raw(&joy_pos_x, &joy_pos_y, NULL, NULL);
+            joy_get_analog_positive_position(&joy_pos_x, &joy_pos_y);
             
-            mcp2515_send_byte(JOY_X_ID, (int8_t)joy_pos_x);
+            mcp2515_send_byte(JOY_X_ID, (uint8_t)joy_pos_x);
             _delay_ms(10); 
-            mcp2515_send_byte(JOY_Y_ID, (int8_t)joy_pos_y);
+            mcp2515_send_byte(JOY_Y_ID, (uint8_t)joy_pos_y);
             _delay_ms(10); 
     
         }

@@ -46,30 +46,30 @@ void pwm_init() {
     PWM->PWM_ENA = PWM_ENA_CHID5 | PWM_ENA_CHID6 ;*/
 
 
-    // Klokke til PIOC og PWM
-    PMC->PMC_PCER0 = (1 << ID_PIOC);
+    // Klokke til PIOB og PWM
+    PMC->PMC_PCER0 = (1 << ID_PIOB);
     PMC->PMC_PCER1 = (1 << (ID_PWM - 32));
 
     // ########################################
     //         HERFRA FUNGERER DET!??
     // ########################################
 
-    // PC19 (PWMH5) og PC18 (PWMH6) -> periferi B, gi pinnene til periferien
-    PIOC->PIO_ABSR |= PIO_ABSR_P18 | PIO_ABSR_P19;
-    PIOC->PIO_PDR   = PIO_PDR_P18 | PIO_PDR_P19;
+    // PB13 (PWMH1) og PC18 (PWMH6) -> periferi B
+    PIOB->PIO_ABSR |= PIO_ABSR_P13; //| PIO_ABSR_P19;
+    PIOB->PIO_PDR   = PIO_PDR_P13; // | PIO_PDR_P19;
    
-    // Kanal 5 (pinne 44)
-    PWM->PWM_CH_NUM[5].PWM_CMR  = PWM_CMR_CPRE_MCK_DIV_32 | PWM_CMR_CPOL;
-    PWM->PWM_CH_NUM[5].PWM_CPRD = PWM_CPRD_SERVO;
-    PWM->PWM_CH_NUM[5].PWM_CDTY = PWM_MID_CDTY_SERVO;
+    // Kanal 1 (pinne PC13 - 21)
+    PWM->PWM_CH_NUM[1].PWM_CMR  = PWM_CMR_CPRE_MCK_DIV_32 | PWM_CMR_CPOL;
+    PWM->PWM_CH_NUM[1].PWM_CPRD = PWM_CPRD_SERVO;
+    PWM->PWM_CH_NUM[1].PWM_CDTY = PWM_MID_CDTY_SERVO;
 
     // Kanal 6 (pinne 45)
-    PWM->PWM_CH_NUM[6].PWM_CMR  = PWM_CMR_CPRE_MCK_DIV_32 | PWM_CMR_CPOL;
-    PWM->PWM_CH_NUM[6].PWM_CPRD = PWM_CPRD_SERVO;
-    PWM->PWM_CH_NUM[6].PWM_CDTY = PWM_MID_CDTY_SERVO;
+    //PWM->PWM_CH_NUM[6].PWM_CMR  = PWM_CMR_CPRE_MCK_DIV_32 | PWM_CMR_CPOL;
+    //PWM->PWM_CH_NUM[6].PWM_CPRD = PWM_CPRD_SERVO;
+    //PWM->PWM_CH_NUM[6].PWM_CDTY = PWM_MID_CDTY_SERVO;
 
     // Start begge kanalene
-    PWM->PWM_ENA = PWM_ENA_CHID5 | PWM_ENA_CHID6;
+    PWM->PWM_ENA = PWM_ENA_CHID1; // | PWM_ENA_CHID6;
 }
 
 
@@ -85,7 +85,7 @@ void pwm_init() {
         }
 
         //update dutycycle
-        PWM->PWM_CH_NUM[5].PWM_CDTYUPD = CDTY;
+        PWM->PWM_CH_NUM[1].PWM_CDTYUPD = CDTY;
 
     }
 
