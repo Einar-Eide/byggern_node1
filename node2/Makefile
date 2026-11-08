@@ -8,11 +8,14 @@ MCUTYPE = __SAM3X8E__
 SOURCE_FILES = \
 	$(BOOTUP) \
 	main.c \
+	time.c \
 	uart.c \
 	can.c \
 	PWM.c \
 	ADC.c \
-	game.c
+	game.c \
+	encoder.c \
+	motor.c
 #   filename1.c \
 #   filename2.c \
 #	filenameN.c

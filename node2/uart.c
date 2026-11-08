@@ -97,8 +97,6 @@ void UART_Handler(){
     
 } 
 
-
-
 // See https://interrupt.memfault.com/blog/boostrapping-libc-with-newlib
 
 extern int _end;

@@ -35,7 +35,6 @@ void adc_analog_read(uint16_t *data) {
 
     // nyeste verdi konvertert:
     *data = (ADC->ADC_LCDR) & ( 0xFFF ); // only the last 12 bits are read out
-
 }
 
 
@@ -67,5 +66,4 @@ uint8_t is_ir_diode_blocked() {
 
     // return true if value is less than 512 ( < 1.6V )
     return photo_diode_signal < 2048;
-
 }

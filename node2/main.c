@@ -6,7 +6,12 @@
 #include "CAN_ID.h"
 #include "PWM.h"
 #include "ADC.h"
+#include "encoder.h"
+#include "motor.h"
 #include "game.h"
+
+#include "time.h"
+
 
 #define F_CPU 84000000
 
@@ -43,6 +48,8 @@ int main()
     can_init(init, 0);
     pwm_init();
     adc_init();
+    encoder_init();
+    motor_init();
 
     printf("Hello World3\r\n"); //what? \r MÅ vær før \n
 
@@ -54,7 +61,7 @@ int main()
 
     uint8_t can_trigger_new_point = 0;
 
-
+    
     while(1) {
         uint8_t received = can_rx(&message);
 
@@ -62,23 +69,27 @@ int main()
 
             if (message.id == JOY_X_ID ) {
                 joy_x = message.byte[0];
-                pwm_set_duty_cycle_from_byte(joy_x);
 
                 //printf("Joystick  X  %d\r\n", joy_x);
-
             }
             else if (message.id == JOY_Y_ID) {
                 joy_y = message.byte[0];
+                pwm_set_duty_cycle_from_byte(joy_y);
 
                 //printf("Joystick y:  %d\r\n", joy_y);
             }
 
-            //printf("Joystick x: %d, y: %d\r\n", joy_x, joy_y);
-
-           
+            //printf("Joystick x: %d, y: %d\r\n", joy_x, joy_y); 
         }
         
-        if (is_ir_diode_blocked()) {
+        
+        Dir dir = joy_get_direction(&joy_x);
+        motor_set_dir(dir);
+        uint8_t speed = motor_get_speed(&joy_x);
+        motor_set_duty_cycle_from_byte(speed);
+        
+        
+        /*if (is_ir_diode_blocked()) {
             printf("ir sensor is blocked! \r\n");
             
             if ( can_trigger_new_point ) {
@@ -87,8 +98,15 @@ int main()
             } 
         } else {
             can_trigger_new_point = true;
-        }
+        }*/
+
+        uint32_t m_positon;
+        encoder_read(&m_positon);
+
+        motor_pi_controller(joy_x, m_positon);
+        
 
     }
+    
     
 }

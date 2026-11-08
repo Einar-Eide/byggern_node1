@@ -47,8 +47,8 @@ void pwm_init() {
 
 
     // Klokke til PIOB og PWM
-    PMC->PMC_PCER0 = (1 << ID_PIOB);
-    PMC->PMC_PCER1 = (1 << (ID_PWM - 32));
+    PMC->PMC_PCER0 |= (1 << ID_PIOB);
+    PMC->PMC_PCER1 |= (1 << (ID_PWM - 32));
 
     // ########################################
     //         HERFRA FUNGERER DET!??
@@ -75,32 +75,51 @@ void pwm_init() {
 
 
 
-    void pwm_set_duty_cycle_cdty( uint32_t CDTY ) {
+void pwm_set_duty_cycle_cdty( uint32_t CDTY ) {
 
-        // clamp (max and min value safe for servo)
-        if (CDTY < PWM_MIN_CDTY_SERVO){
-            CDTY = PWM_MIN_CDTY_SERVO;
-        } else if ( CDTY > PWM_MAX_CDTY_SERVO) {
-            CDTY = PWM_MAX_CDTY_SERVO;
-        }
-
-        //update dutycycle
-        PWM->PWM_CH_NUM[1].PWM_CDTYUPD = CDTY;
-
+    // clamp (max and min value safe for servo)
+    if (CDTY < PWM_MIN_CDTY_SERVO){
+        CDTY = PWM_MIN_CDTY_SERVO;
+    } else if ( CDTY > PWM_MAX_CDTY_SERVO) {
+        CDTY = PWM_MAX_CDTY_SERVO;
     }
 
-    void pwm_set_duty_cycle_from_byte( uint8_t b ) {
-
-        uint32_t cdty = PWM_MIN_CDTY_SERVO + ( (uint32_t)b * PWM_MIN_CDTY_SERVO) / 255; 
-        pwm_set_duty_cycle_cdty(cdty);
-
-    }
-
-
-void pwm_start() {
+    //update dutycycle
+    PWM->PWM_CH_NUM[1].PWM_CDTYUPD = CDTY;
 
 }
+// moving average 3 values
+uint8_t filter_process(uint8_t new_value){
 
-void pwm_stop() {
+    // start with value indicating that the ball is not blocking.
+    static uint8_t x1 = 160;
+    static uint8_t x2 = 160;
+    static uint8_t x3 = 160;
+    static uint8_t x4 = 160;
+    static uint8_t x5 = 160;
+
+
+    x5 = x4;
+    x4 = x3;
+    x3 = x2;   
+    x2 = x1;
+    x1 = new_value;
     
+    uint8_t filtered_value = (x1 + x2 + x3 + x4 + x5) / 5;
+
+    return filtered_value;
+}
+
+
+void pwm_set_duty_cycle_from_byte( uint8_t b ) {
+
+    uint8_t dcs = filter_process(b);
+
+    // dette va litt teit men det fungerer ish..
+    if (dcs > 125 && dcs < 145) { dcs = 155; }
+    //printf("%d\r\n", dcs);
+
+    uint32_t cdty = PWM_MIN_CDTY_SERVO + ( (uint32_t)dcs * PWM_MIN_CDTY_SERVO) / 255; 
+    pwm_set_duty_cycle_cdty(cdty);
+
 }

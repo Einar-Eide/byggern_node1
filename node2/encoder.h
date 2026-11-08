@@ -6,3 +6,4 @@
 #include "uart.h"
 
 void encoder_init();
+void encoder_read(uint32_t* data);

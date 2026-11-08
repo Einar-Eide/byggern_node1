@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include "time.h"
 
-
 uint64_t calib;
 static uint64_t now = 0;
     
@@ -104,4 +103,3 @@ void time_spinUntil(uint64_t then){
 uint64_t ticksPerMs(void){
     return calib;
 }
-
