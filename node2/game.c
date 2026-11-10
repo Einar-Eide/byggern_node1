@@ -1,13 +1,31 @@
 #include "game.h"
 
-
-uint8_t increase_points() {
-    static uint8_t points = 0;
-    points += 1;
-    return points;
-}
+static uint8_t lives = 5;
 
 void play_pong(){
-    //Do something?
+    
+    //show menu
+    //pick player
+    //play game
+    //lose 
+}
 
+void during_game(){
+
+    //if (is_diode_blocked()) {
+    //    lives -= 1;
+    //}
+}
+
+bool is_game_over(){
+
+    if (lives == 0) {
+        return true;
+    }
+    return false;
+}
+
+void reset_game(){
+
+    lives = 5;
 }

@@ -37,7 +37,6 @@ void adc_analog_read(uint16_t *data) {
     *data = (ADC->ADC_LCDR) & ( 0xFFF ); // only the last 12 bits are read out
 }
 
-
 // moving average 3 values
 uint16_t adc_filter_process(uint16_t new_value){
 

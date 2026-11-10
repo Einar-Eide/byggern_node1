@@ -22,48 +22,55 @@ __attribute__((constructor)) void time_init(void){
 	    ((1 << SysTick_CTRL_ENABLE_Pos)    & SysTick_CTRL_ENABLE_Msk);	        // Enable SysTick
 }    
 
-
 void SysTick_Handler(void){
     now += calib;
 }
-
 
 uint64_t time_now(void){
     return now + calib - SysTick->VAL;
 }
 
-
 uint64_t usecs(uint64_t s){
     return s*calib/1000;
 }
+
 uint64_t msecs(uint64_t s){
     return s*calib;
 }
+
 uint64_t seconds(uint64_t s){
     return s*1000*calib;
 }
+
 uint64_t minutes(uint64_t s){
     return s*60*1000*calib;
 }
+
 uint64_t hours(uint64_t s){
     return s*60*60*1000*calib;
 }
 
+
 float totalUsecs(uint64_t t){
     return t / (1.0 * calib / 1000);
-}    
+}  
+
 float totalMsecs(uint64_t t){
     return t / (1.0 * calib);
 }
+
 float totalSeconds(uint64_t t){
     return t / (1.0 * calib * 1000);
 }
+
 float totalMinutes(uint64_t t){
     return t / (1.0 * calib * 1000 * 60);
 }
+
 float totalHours(uint64_t t){
     return t / (1.0 * calib * 1000 * 60 * 60);
 }
+
 
 Time time_split(uint64_t t){
     Time r;

@@ -1,4 +1,3 @@
-
 #include "sam.h"
 #include "can.h"
 #include <stdio.h>
@@ -105,9 +104,6 @@ uint8_t can_rx(CanMsg* m){
     CAN0->CAN_MB[rxMailbox].CAN_MCR |= CAN_MCR_MTCR;
     return 1;
 }
-    
-    
-
     
 /*
 // Example CAN interrupt handler

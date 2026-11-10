@@ -24,9 +24,7 @@ void motor_init(){
     // Start kanal 0
     PWM->PWM_ENA = PWM_ENA_CHID0;
 
-
     // direction pin PC23
-    // TODO sett pin til output slik at vi kan sette den høy eller lav.
     PIOC->PIO_PER  |= PIO_PER_P23;  // enable PIO control
     PIOC->PIO_OER  |= PIO_OER_P23;  // sett til output
 
@@ -35,15 +33,6 @@ void motor_init(){
     
     
 }
-
-
-// void motor_speed(){
-
-// }
-
-// void motor_direction(){
-    
-// }
 
 void motor_set_duty_cycle_cdty(uint32_t CDTY) {
 
@@ -61,12 +50,10 @@ void motor_set_duty_cycle_from_byte(uint8_t b) {
 
     uint8_t dcs = b; // filter_process(b);
 
-    uint32_t cdty = PWM_MIN_CDTY_MOTOR + ( (uint32_t)dcs * (PWM_MAX_CDTY_MOTOR - PWM_MIN_CDTY_MOTOR)) / 255; 
+    uint32_t cdty = PWM_MIN_CDTY_MOTOR + ( (uint32_t)dcs * (PWM_MIN_CDTY_MOTOR)) / 255; 
     motor_set_duty_cycle_cdty(cdty);
 
 }
-
-
 
 Dir joy_get_direction(volatile uint8_t *joy_x) {
 
@@ -97,26 +84,35 @@ uint8_t motor_get_speed(volatile uint8_t *joy_x){
     int neutral_pos_x = 128;
     
     int pos_from_x = abs((int)*joy_x - neutral_pos_x);
-
+    int distance;
+    
     if (pos_from_x < 10){
         distance = 0;
     } else {
-        distance = pos_from_x;
+        distance = (pos_from_x-10);
     }
     
-    int speed = ((distance)*255)/(128-10);
-
-    //int speed = (percentage*percentage*255)/(100*100);
+    int speed = (distance*255)/(128-10);
 
     if (speed > 255){
         speed = 255;
     }
 
-    return speed;
+    int normalized_speed = speed/255 *100; //percentage
+
+    int pwm = PWM_MIN_CDTY_MOTOR + normalized_speed * (PWM_MAX_CDTY_MOTOR -PWM_MIN_CDTY_MOTOR);
+
+    return pwm;
 }
 
-
 void motor_pi_controller(uint8_t r_, uint32_t y) {
+
+    static Butterworth2ndOrder filter;
+    static uint8_t filter_inizielized = 0;
+    if (!filter_inizielized) {
+        butterworth_init(&filter);
+        filter_inizielized = 1;
+    }
     
     // integrated error
     static double e_int = 0;
@@ -130,24 +126,32 @@ void motor_pi_controller(uint8_t r_, uint32_t y) {
         } 
 
         // scale joy input to be same size as y
-        uint32_t r = r_ * MOTOR_POS_JOY_TO_ENC_SCALE_FACTOR;
+        uint32_t r =  butterworth_process( &filter, r_ * MOTOR_POS_JOY_TO_ENC_SCALE_FACTOR );
+        
+        int e = r-y;
 
-        // absloute value of error and motor choose direction
-        uint32_t e;
-        if ( r > y ) {
-            e = r-y;
+        if (e < MIN_ERROR_INTEGRATOR_CUTOFF && e > -MIN_ERROR_INTEGRATOR_CUTOFF) {
             e_int += e / CODE_EXEC_FREQUENCY;
-            motor_set_dir_bool(0);
-            
-        } else {
-            e = -(r-y);
-            e_int -= e / CODE_EXEC_FREQUENCY;
-            motor_set_dir_bool(1);
+        }
+         
+        
+        static int counter = 0;
+        counter ++;
+        if (counter == 10) {
+            printf("y: %d\r\n", y);
+            counter = 0;
         }
         
-        printf("e_int: %.2f\r\n", e_int);
+        double u = e*MOTOR_POS_CONTROLLER_K_P + e_int*MOTOR_POS_CONTROLLER_K_I; 
+
         
-        uint32_t u = e*MOTOR_POS_CONTROLLER_K_P + e_int*MOTOR_POS_CONTROLLER_K_I; 
+        // choose motor direction
+        if (u < 0) {
+            u *= -1;
+            motor_set_dir_bool(1);
+        } else {
+            motor_set_dir_bool(0);
+        }
 
         // clamp u
         if (u > ENC_MAX_VALUE ) {
@@ -162,7 +166,6 @@ void motor_pi_controller(uint8_t r_, uint32_t y) {
 
         motor_pi_controller_last_exec = totalMsecs(time_now());
     }
-
 }
 
 void motor_set_dir_bool(uint8_t dir) {

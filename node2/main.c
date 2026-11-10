@@ -9,8 +9,8 @@
 #include "encoder.h"
 #include "motor.h"
 #include "game.h"
-
 #include "time.h"
+#include "solenoid.h"
 
 
 #define F_CPU 84000000
@@ -34,7 +34,7 @@ int main()
 
     //Uncomment after including uart above
     uart_init(F_CPU, 9600);
-    printf("Hello World4\r\n"); //what? \r MÅ vær før \n
+    printf("Hello World4\r\n");
 
     CanInit init = {};
     init.phase1 = 6;
@@ -50,16 +50,22 @@ int main()
     adc_init();
     encoder_init();
     motor_init();
+    solenoid_init();
 
-    printf("Hello World3\r\n"); //what? \r MÅ vær før \n
+    printf("Hello World3\r\n");
 
 
     CanMsg message = {};
     
     uint8_t joy_x;
     uint8_t joy_y;
+    uint8_t btn_pressed = 0;
 
     uint8_t can_trigger_new_point = 0;
+
+    uint8_t game_is_running = 0;
+    uint8_t prev_game_is_running = 0;
+    static bool pi = false;
 
     
     while(1) {
@@ -68,27 +74,47 @@ int main()
         if (received) {
 
             if (message.id == JOY_X_ID ) {
-                joy_x = message.byte[0];
 
-                //printf("Joystick  X  %d\r\n", joy_x);
+                joy_x = message.byte[0];
+                //printf("joy_x: %d\r\n", joy_x);
             }
             else if (message.id == JOY_Y_ID) {
+
                 joy_y = message.byte[0];
                 pwm_set_duty_cycle_from_byte(joy_y);
-
-                //printf("Joystick y:  %d\r\n", joy_y);
             }
 
-            //printf("Joystick x: %d, y: %d\r\n", joy_x, joy_y); 
+            else if (message.id == JOY_BTN_ID) {
+                solenoid_push();
+                game_is_running = 1;
+            }
         }
+
+        if (game_is_running && !prev_game_is_running) {
+            // start game (trigger game_init)
+            encoder_reset();
+        }
+
+        //PI regulator
+        if (game_is_running && pi) {
+            uint32_t m_positon;
+            encoder_read(&m_positon);
+
+            motor_pi_controller(joy_x, m_positon);
+        } 
+        else if (game_is_running && !pi) {
+            Dir dir = joy_get_direction(&joy_x);
+            motor_set_dir(dir);
+            uint8_t speed = motor_get_speed(&joy_x);
+            motor_set_duty_cycle_from_byte(speed);  
+        }
+
+        // set prev game state
+        prev_game_is_running =  game_is_running;
+    }
+
         
-        
-        Dir dir = joy_get_direction(&joy_x);
-        motor_set_dir(dir);
-        uint8_t speed = motor_get_speed(&joy_x);
-        motor_set_duty_cycle_from_byte(speed);
-        
-        
+        //Test to check if the diode is blocked
         /*if (is_ir_diode_blocked()) {
             printf("ir sensor is blocked! \r\n");
             
@@ -96,17 +122,8 @@ int main()
                 printf("current score: %d\r\n", increase_points());
                 can_trigger_new_point = false;
             } 
+
         } else {
             can_trigger_new_point = true;
         }*/
-
-        uint32_t m_positon;
-        encoder_read(&m_positon);
-
-        motor_pi_controller(joy_x, m_positon);
-        
-
-    }
-    
-    
-}
+} 

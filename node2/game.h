@@ -7,13 +7,8 @@
 #include <stdarg.h>
 #include "sam/sam3x/include/sam.h"
 
-
-/**
- * increases points when called
- * retuns current score 
- */
-uint8_t increase_points();
-
 void play_pong();
-
+void during_game();
+bool is_game_over();
+void reset_game();
 uint32_t millis(void);

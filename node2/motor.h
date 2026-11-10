@@ -6,6 +6,7 @@
 #include "uart.h"
 #include "PWM.h"
 #include "time.h"
+#include "motor_butterworth.h"
 
 typedef enum {JOY_LEFT, JOY_RIGHT, JOY_UP, JOY_DOWN, JOY_NEUTRAL} Dir;
 
@@ -15,17 +16,14 @@ typedef enum {JOY_LEFT, JOY_RIGHT, JOY_UP, JOY_DOWN, JOY_NEUTRAL} Dir;
 #define PWM_MAX_CDTY_MOTOR 88 // max 84%: CPRD * 0.84 = 88.2
 #define PWM_MID_CDTY_MOTOR 53 // (min + max) / 2 = 52.5
 
-
-
 // motor controller 
-#define MOTOR_POS_CONTROLLER_K_P 1
+#define MOTOR_POS_CONTROLLER_K_P 5.5f
 #define MOTOR_POS_CONTROLLER_K_I 0.5f
-#define CODE_EXEC_FREQUENCY 10.0f
+#define CODE_EXEC_FREQUENCY 100.0f // Hz
+#define MIN_ERROR_INTEGRATOR_CUTOFF 100 //encoder steps
 
 #define MOTOR_POS_JOY_TO_ENC_SCALE_FACTOR 22 // 5614 / 255 = 22.0157   
-#define ENC_MAX_VALUE 5614
-
-
+#define ENC_MAX_VALUE 5619
 
 void motor_init();
 void motor_set_duty_cycle_from_byte(uint8_t b);

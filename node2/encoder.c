@@ -6,7 +6,7 @@ void encoder_init() {
     PMC->PMC_PCER0 |= (1 << ID_PIOC);
     PMC->PMC_PCER1 |= ((1 << (ID_TC6 - 32)) | (1 << (ID_TC7 - 32)) | (1 <<(ID_TC8 - 32)));
 
-    
+
     //Gi PC26 og PC26 til peripheral B (TC2)
     PIOC->PIO_ABSR |= PIO_ABSR_P25 | PIO_ABSR_P26;
   
@@ -22,7 +22,10 @@ void encoder_init() {
 
     // enable, reset and start counter clock
     TC2->TC_CHANNEL[0].TC_CCR = (TC_CCR_CLKEN) | (TC_CCR_SWTRG);
+}
 
+void encoder_reset() {
+    TC2->TC_CHANNEL[0].TC_CCR = (TC_CCR_CLKEN) | (TC_CCR_SWTRG);
 }
 
 void encoder_read(uint32_t* data) {
@@ -30,4 +33,3 @@ void encoder_read(uint32_t* data) {
     *data = TC2->TC_CHANNEL[0].TC_CV;
     // printf("encoder value: %d \r\n", *data);
 }
-

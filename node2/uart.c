@@ -16,6 +16,7 @@ RingBuf ringBuf = {0};
 
 
 int push(RingBuf* rb, uint8_t val){
+
     if(rb->length >= (sizeof(rb->buffer)/sizeof(rb->buffer[0]))){
         return 0;
     }
@@ -25,7 +26,8 @@ int push(RingBuf* rb, uint8_t val){
     return 1;
 }
 
-int pop(RingBuf* rb, uint8_t* val){    
+int pop(RingBuf* rb, uint8_t* val){
+
     if(!rb->length){
         return 0;
     }
@@ -36,6 +38,7 @@ int pop(RingBuf* rb, uint8_t* val){
 }
 
 void uart_init(uint32_t cpufreq, uint32_t baudrate){
+
     PMC->PMC_PCER0 |= (1 << ID_UART);
     
     // Set UART pins (A8, A9) to use alternate function (this disables regular IO)
@@ -59,15 +62,18 @@ void uart_init(uint32_t cpufreq, uint32_t baudrate){
 }    
 
 void uart_tx(uint8_t val){
+
     while(!(UART->UART_SR & UART_SR_TXEMPTY)){}
     UART->UART_THR = val;
 }
 
 uint8_t uart_rx(uint8_t* val){
+
     return pop(&ringBuf, val);
 }    
 
 int uart_flush(char* buf, int len){
+
     int r = 0;
     for(; r < len; r++){
         int ret = uart_rx((uint8_t*)&buf[r]);
@@ -170,7 +176,4 @@ int _read(int file, char* ptr, int len){
         }        
     }
     return nread;
-}
-
-
-   
+}  

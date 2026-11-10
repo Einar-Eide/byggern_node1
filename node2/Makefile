@@ -15,7 +15,9 @@ SOURCE_FILES = \
 	ADC.c \
 	game.c \
 	encoder.c \
-	motor.c
+	motor.c \
+	motor_butterworth.c \
+	solenoid.c
 #   filename1.c \
 #   filename2.c \
 #	filenameN.c
