@@ -1,3 +1,5 @@
+TXT FILE WITH INFORMATION FOUND IN THE DATA SHEETS
+
 CANCTRL
     Can control register
     All bits R/W 

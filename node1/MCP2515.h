@@ -6,7 +6,6 @@
 
 #include "SPI.h"
 
-
 uint8_t mcp2515_init();
 
 void mcp2515_read_byte( uint8_t address, uint8_t* data );
@@ -14,7 +13,7 @@ void mcp2515_write_byte(uint8_t address, uint8_t data);
 void mcp2515_write(uint8_t address, char* buffer, size_t length);
 
 void mcp2515_send_byte(uint16_t id, uint8_t data);
-void mcp2515_receive_byte(uint16_t *id, uint8_t *data);
+uint8_t mcp2515_receive_byte(uint16_t *id, uint8_t *data);
 
 void mcp2515_load_tx_buffer(uint8_t TXn, uint8_t data);
 void mcp2515_rts(uint8_t TXn);
@@ -106,7 +105,6 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define MCP_RXB1SIDL	0x72
 #define MCP_RXB1D0  	0x76
 
-
 #define MCP_TX_INT		0x1C		// Enable all transmit interrupts
 #define MCP_TX01_INT	0x0C		// Enable TXB0 and TXB1 interrupts
 #define MCP_RX_INT		0x03		// Enable receive interrupts
@@ -114,6 +112,7 @@ Copyright 2003 Kimberly Otten Software Consulting
 
 #define MCP_TX01_MASK	0x14
 #define MCP_TX_MASK		0x54
+
 
 // Define SPI Instruction Set
 
@@ -179,6 +178,7 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define PS1_7           0x30
 #define PRSEG_2         0x01
 
+
 // CNF3 Register Values
 
 #define SOF_ENABLE		0x80
@@ -198,4 +198,3 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define MCP_ERRIF		0x20
 #define MCP_WAKIF		0x40
 #define MCP_MERRF		0x80
-

@@ -20,26 +20,16 @@ volatile Dir *p_dir_joy_y = &dir_joy_y_1;
 
 
 const char g_menu_options[3][10] = {
-        "Serine",
-        "Einar",
-        "Lea"
-    };
+    "Serine",
+    "Einar",
+    "Lea"
+};
 
 const uint8_t g_menu_options_length = sizeof(g_menu_options) / sizeof(g_menu_options[0]);
 
-
-// trenger vi denne?
-void MENU_init(){
-    DDRB &= ~(1 << DDB0); //??
-    OLED_init();
-
-    //Button init
-    
-}
-
 void MENU_update() {
 
-    // se om menystaten har endret seg?
+    // se om menystaten har endret seg
     if (g_current_menu_state != g_prev_menu_state) {
         OLED_clear_dispay();
         g_screen_should_updated = 1;
@@ -93,8 +83,8 @@ void MENU_update() {
             g_current_menu_state = MENU;
         }
         break;
-    }
-    
+
+    } 
 }
 
 
@@ -117,11 +107,11 @@ void MENU_draw(){
 
         g_screen_should_updated = 0;
     }
-
 }
 
 
 void MENU_scroll(){
+
     static Dir prev_y_dir = JOY_NEUTRAL;
     static Dir prev_x_dir = JOY_NEUTRAL;
 

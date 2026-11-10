@@ -98,9 +98,9 @@ uint8_t motor_get_speed(volatile uint8_t *joy_x){
         speed = 255;
     }
 
-    int normalized_speed = speed/255 *100; //percentage
+    int normalized_speed = (speed*100) /255; //percentage
 
-    int pwm = PWM_MIN_CDTY_MOTOR + normalized_speed * (PWM_MAX_CDTY_MOTOR -PWM_MIN_CDTY_MOTOR);
+    int pwm = PWM_MIN_CDTY_MOTOR + (normalized_speed * (PWM_MAX_CDTY_MOTOR -PWM_MIN_CDTY_MOTOR))/ 100;
 
     return pwm;
 }

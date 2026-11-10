@@ -6,7 +6,7 @@
  */
 #include "fonts.h"
 // Font 8x8 - Large
-/*
+
 const unsigned char PROGMEM font8[95][8] = {
 	{0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000}, //
 	{0b00000000,0b00000110,0b01011111,0b01011111,0b00000110,0b00000000,0b00000000,0b00000000}, // !
@@ -103,7 +103,7 @@ const unsigned char PROGMEM font8[95][8] = {
 	{0b00000000,0b00000000,0b00000000,0b01110111,0b01110111,0b00000000,0b00000000,0b00000000}, // |
 	{0b01000001,0b01000001,0b01110111,0b00111110,0b00001000,0b00001000,0b00000000,0b00000000}, // }
 	{0b00000010,0b00000011,0b00000001,0b00000011,0b00000010,0b00000011,0b00000001,0b00000000}, // ~
-};*/
+};
 
 // Font 5x7 - normal
 const unsigned char PROGMEM font5[95][5] = {
@@ -203,7 +203,7 @@ const unsigned char PROGMEM font5[95][5] = {
 	{0b00000000,0b01000001,0b00110110,0b00001000,0b00000000}, // }
 	{0b00000010,0b00000001,0b00000011,0b00000010,0b00000001}, // ~
 	};
-/*
+
 // Font 4x6 - Small
 const unsigned char PROGMEM font4[95][4] = {
 		{0b00000000,0b00000000,0b00000000,0b00000000}, //
@@ -303,7 +303,6 @@ const unsigned char PROGMEM font4[95][4] = {
 		{0b00001000,0b00000100,0b00001000,0b00000100}, // ~
 		};
 
-*/
 
 // 8x8 Black & White Emoji Font Library (Stored in Flash Memory)
 // Dimensions changed to [12][8] to fit all 12 emojis. 

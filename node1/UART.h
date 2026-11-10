@@ -1,11 +1,10 @@
-# pragma once
+#pragma once
 
 #define F_CPU 4915200UL
 
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h> 
-
 
 #define BAUD 9600
 #define MYUBRR (F_CPU/16)/BAUD - 1

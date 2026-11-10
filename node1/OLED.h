@@ -1,12 +1,10 @@
 #pragma once
 
-
 #define F_CPU 4915200UL
 
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h> 
-//#include <string.h>
 
 #include "SPI.h"
 #include "fonts.h"
@@ -27,9 +25,6 @@ void OLED_go_to_page(uint8_t line);
 void OLED_go_to_column(uint8_t column);
 void OLED_go_to(uint8_t column, uint8_t row);
 
-/*
-void OLED_clear_line(uint8_t line);*/
-
 size_t strlen(char *str);
 
 void OLED_print_char(char c);
@@ -42,3 +37,4 @@ void OLED_printf_1(char *str, textpos pos, uint8_t line);
 void OLED_print_emoji(uint8_t emoji);
 
 void OLED_print_car_animation();
+void OLED_game_over();
