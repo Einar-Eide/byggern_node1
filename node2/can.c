@@ -66,7 +66,6 @@ void can_init(CanInit init, uint8_t rxInterrupt){
     CAN0->CAN_MR |= CAN_MR_CANEN;
 }
 
-
 void can_tx(CanMsg m){
     while(!(CAN0->CAN_MB[txMailbox].CAN_MSR & CAN_MSR_MRDY)){}
     

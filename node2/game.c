@@ -1,4 +1,6 @@
 #include "game.h"
+#include "can.h"
+#include "CAN_ID.h"
 
 static uint8_t lives = 5;
 
@@ -13,7 +15,7 @@ void play_pong(){
 void during_game(){
 
     //if (is_diode_blocked()) {
-    //    lives -= 1;
+    //    lose_life();
     //}
 }
 
@@ -25,7 +27,11 @@ bool is_game_over(){
     return false;
 }
 
-void reset_game(){
+uint8_t game_reset(){
+    uint8_t lives = GAME_LIVES;
+    return lives;
+}
 
-    lives = 5;
+void lose_life(uint8_t *lives) {
+    lives -= 1;
 }

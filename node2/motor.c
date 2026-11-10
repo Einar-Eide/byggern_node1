@@ -50,9 +50,14 @@ void motor_set_duty_cycle_from_byte(uint8_t b) {
 
     uint8_t dcs = b; // filter_process(b);
 
-    uint32_t cdty = PWM_MIN_CDTY_MOTOR + ( (uint32_t)dcs * (PWM_MIN_CDTY_MOTOR)) / 255; 
+    uint32_t cdty = PWM_MIN_CDTY_MOTOR + ( (uint32_t)dcs * (PWM_MAX_CDTY_MOTOR - PWM_MIN_CDTY_MOTOR)) / 255; 
     motor_set_duty_cycle_cdty(cdty);
 
+}
+
+void motor_game_over(){
+
+    motor_set_duty_cycle_from_byte(0);
 }
 
 Dir joy_get_direction(volatile uint8_t *joy_x) {
@@ -70,45 +75,47 @@ Dir joy_get_direction(volatile uint8_t *joy_x) {
     return dir_joy_x;
 }
 
-void motor_set_dir(Dir dir) {
+void motor_set_dir(volatile uint8_t *joy_x) {
+
+    Dir dir = joy_get_direction(joy_x);
 
     if (dir == JOY_LEFT) {
         PIOC->PIO_SODR |= PIO_SODR_P23; // endre pin til høy
     } else if (dir == JOY_RIGHT) {
         PIOC->PIO_CODR |= PIO_CODR_P23; // sett pin til lav
     }
+
 }
 
-uint8_t motor_get_speed(volatile uint8_t *joy_x){
+void motor_set_speed(volatile uint8_t *joy_x){
     
     int neutral_pos_x = 128;
+    int deadzone = 1;
+    int max_local_speed = 200;
     
     int pos_from_x = abs((int)*joy_x - neutral_pos_x);
     int distance;
     
-    if (pos_from_x < 10){
+    if (pos_from_x < deadzone){
         distance = 0;
     } else {
-        distance = (pos_from_x-10);
+        distance = (pos_from_x-deadzone);
     }
     
-    int speed = (distance*255)/(128-10);
+    int linear_speed = (distance*max_local_speed)/(neutral_pos_x-deadzone);
 
-    if (speed > 255){
-        speed = 255;
+    if (linear_speed > max_local_speed){
+        linear_speed = max_local_speed;
     }
 
-    int normalized_speed = (speed*100) /255; //percentage
-
-    int pwm = PWM_MIN_CDTY_MOTOR + (normalized_speed * (PWM_MAX_CDTY_MOTOR -PWM_MIN_CDTY_MOTOR))/ 100;
-
-    return pwm;
+    motor_set_duty_cycle_from_byte((uint8_t)linear_speed); 
 }
 
 void motor_pi_controller(uint8_t r_, uint32_t y) {
 
     static Butterworth2ndOrder filter;
     static uint8_t filter_inizielized = 0;
+
     if (!filter_inizielized) {
         butterworth_init(&filter);
         filter_inizielized = 1;
@@ -134,13 +141,6 @@ void motor_pi_controller(uint8_t r_, uint32_t y) {
             e_int += e / CODE_EXEC_FREQUENCY;
         }
          
-        
-        static int counter = 0;
-        counter ++;
-        if (counter == 10) {
-            printf("y: %d\r\n", y);
-            counter = 0;
-        }
         
         double u = e*MOTOR_POS_CONTROLLER_K_P + e_int*MOTOR_POS_CONTROLLER_K_I; 
 
@@ -177,10 +177,7 @@ void motor_set_dir_bool(uint8_t dir) {
     }
 }
 
-
-
 // PB12 - D7
-
 
 // PC23 - D20
 

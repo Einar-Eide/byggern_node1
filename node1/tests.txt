@@ -122,3 +122,14 @@ void SRAM_test(void)
 
 //Test button_pressed()
 //printf("Button value: %d", button_pressed());
+
+
+ //uint8_t data = 0;
+//printf("Data read: %d\n\r", data);
+//uint8_t ctrl_reg = 100;
+//mcp2515_read_byte(MCP_TXB0CTRL, &ctrl_reg);
+//printf("%d\n\r", ctrl_reg);
+
+//char testbyte[16] = "Hello World";
+//char testCHAR = 50;
+//char* p_testbyte = &testbyte[0];

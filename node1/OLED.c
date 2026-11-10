@@ -2,6 +2,8 @@
 
 uint16_t cursor_column_position = 0;
 
+
+//initialize
 void OLED_init(){
 
     DDRB |= (1<<OLED_DC);
@@ -16,10 +18,11 @@ void OLED_init(){
 
     SPI_release_slaves();
     OLED_clear_dispay();
-
     OLED_go_to(0,0);
 }
 
+
+//Send command over SPI
 void OLED_send_command(char cmd) {
 
     SPI_select_slave(OLED);
@@ -31,11 +34,13 @@ void OLED_send_command(char cmd) {
     SPI_release_slaves();
 }
 
+//Set cursor at page
 void OLED_go_to_page(uint8_t page) {
 
     OLED_send_command(0xB0 | (0x07 & page)); // Go to first page + page
 }
 
+//Set cursor at column
 void OLED_go_to_column(uint8_t column) {
 
     OLED_send_command(0x0F & column);
@@ -44,6 +49,8 @@ void OLED_go_to_column(uint8_t column) {
     cursor_column_position = column;
 }
 
+
+//Set cursor position at row, column
 void OLED_go_to(uint8_t column, uint8_t row){
 
     OLED_go_to_page(row);
@@ -62,7 +69,9 @@ void OLED_send_data(char data){
     SPI_release_slaves();
 }
 
-void OLED_clear_dispay(){ //clears display
+
+//Clear OLED display
+void OLED_clear_dispay(){
 
     for(int j = 0; j < 8; j++){
 
@@ -75,6 +84,7 @@ void OLED_clear_dispay(){ //clears display
     }
 }
 
+//Module internal function to print char on OLED display
 void OLED_print_char(char c) {
 
     for(uint8_t i = 0; i < 5; i++) {
@@ -83,6 +93,7 @@ void OLED_print_char(char c) {
     }
 }
 
+//String length function
 size_t strlen(char *str) {
 
     int c = 0;
@@ -95,15 +106,17 @@ size_t strlen(char *str) {
     return c;
 }
 
+//Print string at current pointer position
 void OLED_printf(char *str){
 
     while (*str){
         OLED_print_char(*str);
-        OLED_send_data(0x00); //mellomrom
+        OLED_send_data(0x00); //Space between characters
         str++;
     }
 }
 
+//Print str at left, center or right side of pos
 void OLED_printf_2(char *str, textpos pos){
 
     size_t px_length = strlen(str) * 6; //5+1
@@ -135,6 +148,7 @@ void OLED_printf_2(char *str, textpos pos){
     OLED_go_to_column(start_column);
 }
 
+//Print string at left, center or right part of display at given page nr
 void OLED_printf_1(char *str, textpos pos, uint8_t page){
 
     switch (pos){
@@ -164,6 +178,7 @@ void OLED_printf_1(char *str, textpos pos, uint8_t page){
     } 
 }
 
+//Print emoji of choice
 void OLED_print_emoji(uint8_t emoji){
 
     for(uint8_t i = 0; i < 8; i++) {
@@ -171,7 +186,8 @@ void OLED_print_emoji(uint8_t emoji){
         OLED_send_data(pgm_read_byte(&emoji_font[emoji][i]));
     }
 }
-
+/*
+//Print car on display
 void OLED_print_car_animation(){
 
     _delay_ms(500);
@@ -189,7 +205,15 @@ void OLED_print_car_animation(){
     OLED_clear_dispay();
 }
 
+*/
+//Print game over
 void OLED_game_over(){
+    int i;
 
-    OLED_printf_1("GAME OVER!", OLED_CENTER, 4);
+    for (i = 0; i < 40; i++) {
+        OLED_printf_1("GAME OVER!", OLED_CENTER, i);
+        _delay_ms(100);
+        OLED_clear_dispay(); 
+    }
 }
+    

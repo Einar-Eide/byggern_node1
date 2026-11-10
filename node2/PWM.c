@@ -67,7 +67,7 @@ void pwm_set_duty_cycle_from_byte( uint8_t b ) {
 
     uint8_t dcs = filter_process(b);
 
-    if (dcs > 125 && dcs < 145) { dcs = 155; }
+    if (dcs > 100 && dcs < 150) { dcs = 150; }
 
     uint32_t cdty = PWM_MIN_CDTY_SERVO + ( (uint32_t)dcs * (PWM_MAX_CDTY_SERVO - PWM_MIN_CDTY_SERVO)) / 255; 
     pwm_set_duty_cycle_cdty(cdty);

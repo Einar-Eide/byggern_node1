@@ -66,6 +66,18 @@ int main()
     uint8_t game_is_running = 0;
     uint8_t prev_game_is_running = 0;
     static bool pi = false;
+    uint8_t lives = GAME_LIVES;
+    Game_Mode prev_mode;
+    Game_Mode mode;
+
+    CanMsg lives_msg;
+    lives_msg.id = GAME_LIVES_ID;
+    lives_msg.length = 1;
+    lives_msg.byte[0] = lives;
+
+    uint32_t last_time_blocked = 0;
+
+    pwm_set_duty_cycle_from_byte(255);
 
     
     while(1) {
@@ -86,44 +98,87 @@ int main()
 
             else if (message.id == JOY_BTN_ID) {
                 solenoid_push();
-                game_is_running = 1;
+            }
+
+            else if (message.id == GAME_MODE_ID){
+                prev_mode = mode;
+                mode = message.byte[0];
+
+                if(prev_mode == MENU && mode != prev_mode ){
+                    encoder_reset();
+                    game_reset();
+                    lives = GAME_LIVES; 
+                    game_is_running = 1;
+                    printf("lives: %d\r\n", lives);
+
+                    // send start lives
+                    lives_msg.byte[0] = lives;
+                    can_tx(lives_msg);
+                }
             }
         }
 
-        if (game_is_running && !prev_game_is_running) {
+        //Old game logic
+        /*if (game_is_running && !prev_game_is_running) {
             // start game (trigger game_init)
             encoder_reset();
-        }
+            uint8_t lives = game_reset();
+        }*/
 
         //PI regulator
-        if (game_is_running && pi) {
+        if (mode == 2) {
+
             uint32_t m_positon;
             encoder_read(&m_positon);
 
             motor_pi_controller(joy_x, m_positon);
+
         } 
-        else if (game_is_running && !pi) {
-            Dir dir = joy_get_direction(&joy_x);
-            motor_set_dir(dir);
-            uint8_t speed = motor_get_speed(&joy_x);
-            motor_set_duty_cycle_from_byte(speed);  
+        else if (mode == 1) {
+
+            motor_set_dir(&joy_x);
+            motor_set_speed(&joy_x);
+
+        } else if (mode == 0) {
+            lives = GAME_LIVES;
         }
 
         // set prev game state
         prev_game_is_running =  game_is_running;
-    }
 
-        
+
         //Test to check if the diode is blocked
-        /*if (is_ir_diode_blocked()) {
-            printf("ir sensor is blocked! \r\n");
+
+
+        if (is_ir_diode_blocked()) {
             
-            if ( can_trigger_new_point ) {
-                printf("current score: %d\r\n", increase_points());
-                can_trigger_new_point = false;
-            } 
+            last_time_blocked = totalMsecs(time_now());
+
+            if (can_trigger_new_point ) {
+                //lose_life(&lives);
+                lives -=1;
+                printf("ir sensor is blocked! %d\r\n", lives);
+
+                if(lives == 0){
+                    game_is_running = 0;
+                }
+
+                lives_msg.byte[0] = lives;
+                can_tx(lives_msg);
+
+                printf("Sent can message");
+            }
+
+            can_trigger_new_point = false;
 
         } else {
-            can_trigger_new_point = true;
-        }*/
-} 
+
+            if( totalMsecs(time_now()) > last_time_blocked + 2000 ){ // wait 2 sek before next loose point
+                can_trigger_new_point = true;
+            } else {
+                can_trigger_new_point = false;
+            }
+        }
+
+    }
+}

@@ -139,7 +139,7 @@ void get_joy_direction(volatile Dir *dir_joy_x, volatile Dir *dir_joy_y ){
     //test to check the direction of the joystick only
     //printf("Dir joy x: %s, Dir joy y: %s\n\r", dir_to_string(*dir_joy_x), dir_to_string(*dir_joy_y));
 }
-
+/*
 void calibrate_joy(){
 
     printf("Starting Calibration for Joystick!\n\r");
@@ -272,7 +272,9 @@ void calibrate_joy(){
     printf("Finished calibration of joystick!\n\r");
     printf("joy_x min: %d\t\tmax: %d\n\r", (g_joy_x_min), (g_joy_x_max));
     printf("joy_y min: %d\t\tmax: %d\n\r", (g_joy_y_min), (g_joy_y_max));
-} 
+
+}
+    */ 
 
 uint8_t button_down(){
 

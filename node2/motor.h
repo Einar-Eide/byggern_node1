@@ -17,8 +17,8 @@ typedef enum {JOY_LEFT, JOY_RIGHT, JOY_UP, JOY_DOWN, JOY_NEUTRAL} Dir;
 #define PWM_MID_CDTY_MOTOR 53 // (min + max) / 2 = 52.5
 
 // motor controller 
-#define MOTOR_POS_CONTROLLER_K_P 5.5f
-#define MOTOR_POS_CONTROLLER_K_I 0.5f
+#define MOTOR_POS_CONTROLLER_K_P 2.0f
+#define MOTOR_POS_CONTROLLER_K_I 1.0f
 #define CODE_EXEC_FREQUENCY 100.0f // Hz
 #define MIN_ERROR_INTEGRATOR_CUTOFF 100 //encoder steps
 
@@ -27,11 +27,12 @@ typedef enum {JOY_LEFT, JOY_RIGHT, JOY_UP, JOY_DOWN, JOY_NEUTRAL} Dir;
 
 void motor_init();
 void motor_set_duty_cycle_from_byte(uint8_t b);
+void motor_game_over();
 
 //Uten PI regulator
 Dir joy_get_direction(volatile uint8_t *joy_x);
-void motor_set_dir(Dir dir);
-uint8_t motor_get_speed(volatile uint8_t *joy_x);
+void motor_set_dir(volatile uint8_t *joy_x);
+void motor_set_speed(volatile uint8_t *joy_x);
 
 //Med PI regulator
 void motor_pi_controller(uint8_t r_, uint32_t y);

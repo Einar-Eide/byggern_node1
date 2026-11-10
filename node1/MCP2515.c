@@ -118,6 +118,9 @@ void mcp2515_send_byte(uint16_t id, uint8_t data) {
 
     // Wait for send
     _delay_us(500);
+
+    // wait more for sending???
+    _delay_ms(10); 
 }
 
 // bool for if new message was received 
@@ -126,14 +129,14 @@ uint8_t mcp2515_receive_byte(uint16_t *id, uint8_t* data){
     uint8_t canintf;
     mcp2515_read_byte(MCP_CANINTF, &canintf);
 
-    if (!(canintf & MCP_RX0IF)) {
+    if (!(canintf & MCP_RX1IF)) {
         return 0;  // no new message
     }
 
-    mcp2515_read_rx_buffer(0, id, data);
+    mcp2515_read_rx_buffer(1, id, data);
 
     // clear the flag so we can receive the next message
-    mcp2515_bitmod(MCP_CANINTF, MCP_RX0IF, 0x00);
+    mcp2515_bitmod(MCP_CANINTF, MCP_RX1IF, 0x00);
 
     printf("Read can message %d\n\n\r", data[0]);
 
