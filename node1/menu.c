@@ -21,7 +21,7 @@ volatile Dir *p_dir_joy_y = &dir_joy_y_1;
 Game_state g_game_state;
 Game_state* g_p_game_state = &g_game_state;
 
-
+//what is written to display
 const char g_menu_options[5][12] = {
     "Serine",
     "Einar",
@@ -33,6 +33,7 @@ const char g_menu_options[5][12] = {
 
 const uint8_t g_menu_options_length = sizeof(g_menu_options) / sizeof(g_menu_options[0]);
 
+//Updates oled display and handles menu state
 void MENU_update() {
 
     uint8_t is_first_iteration_of_new_menu_state = 0;
@@ -50,16 +51,22 @@ void MENU_update() {
     switch (g_current_menu_state)
     {
     case MENU:
+        //Set game mode to menu
         g_game_state.game_mode = 0;
         MENU_scroll();
         MENU_draw();
+
+        //When button is pressed, select state based on g_menu_position
         if(button_pressed()){
             g_current_menu_state = (MENU_state)(g_menu_position+1);
             g_screen_should_updated = 1;
         }
         break;
     
+
     case SERINE:
+
+        // Show text and return when button is pressed
         /*OLED_printf_1("/\\_/\\\\", OLED_CENTER, 0);
         OLED_printf_1("/     \\", OLED_CENTER, 1);
         OLED_printf_1("(  o o  )", OLED_CENTER, 2);
@@ -75,6 +82,7 @@ void MENU_update() {
         break;
     
     case EINAR:
+        // Show text and return when button is pressed
         /*OLED_printf_1(".---.  .---.", OLED_CENTER, 0);
         OLED_printf_1("/  o \\/  o  \\", OLED_CENTER, 1);
         OLED_printf_1("(      ^      )", OLED_CENTER, 2);
@@ -90,6 +98,7 @@ void MENU_update() {
         break;
     
     case LEA:
+        // Show text and return when button is pressed
         OLED_printf_1("HEI LEA!", OLED_CENTER,4);
         if(button_pressed()){
             g_current_menu_state = MENU;
@@ -115,6 +124,7 @@ void MENU_update() {
     } 
 }
 
+//Draw menu and pointer arrow
 void MENU_draw(){
 
     if( g_screen_should_updated ){
@@ -137,11 +147,12 @@ void MENU_draw(){
 }
 
 
-
+//reset number of lives
 void game_joy_speed_init() {
     g_game_state.lives_left = 3;
 }
 
+// Update game display and return when game over
 void game_joy_speed() {
 
     static uint8_t last_lives_left = 0;
@@ -185,7 +196,7 @@ void game_joy_speed() {
     last_lives_left = g_game_state.lives_left;
 }
 
-
+//Move menu selection when joystick is moved up or down
 void MENU_scroll(){
 
     static Dir prev_y_dir = JOY_NEUTRAL;

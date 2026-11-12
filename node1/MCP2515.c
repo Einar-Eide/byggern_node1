@@ -1,16 +1,19 @@
 #include "MCP2515.h"
 
+//Initialize mcp2515
 uint8_t mcp2515_init() {
     
     uint8_t value;
     mcp2515_reset();
     
+    //Ckeck if in config mode after reset
     mcp2515_read_byte(MCP_CANSTAT, &value);
     if ( (value & MODE_MASK) != MODE_CONFIG ) {
         printf (" MCP2515 is NOT in configuration mode after reset !\n" );
         return 1;
     }
     
+    //Configurations
     mcp2515_write_byte(MCP_CANCTRL, MODE_CONFIG | CLKOUT_DISABLE); // Set to config mode, disable CLKOUT
     mcp2515_write_byte(MCP_CNF1, (SJW1 | BRP3) ); // sync jump width = 1xTq, Baud rate prescaler = 3 for Tq = 500ns
     mcp2515_write_byte(MCP_CNF2, BTLMODE | SAMPLE_1X | PS1_7 | PRSEG_2); //Set PS2 manually, PS1 = 7, PRSEG = 2
@@ -20,6 +23,7 @@ uint8_t mcp2515_init() {
     return 0;
 }
 
+//Read register from mcp2515 using SPI
 void mcp2515_read_byte( uint8_t address, uint8_t* data ){
 
     SPI_select_slave(CAN);
@@ -29,6 +33,7 @@ void mcp2515_read_byte( uint8_t address, uint8_t* data ){
     SPI_release_slaves();
 }
 
+//Write register to mcp2515 using SPI
 void mcp2515_write_byte( uint8_t address, uint8_t data){
 
     SPI_select_slave(CAN);
@@ -38,6 +43,7 @@ void mcp2515_write_byte( uint8_t address, uint8_t data){
     SPI_release_slaves();
 }
 
+//Write data of given length to mcp2515 using SPI
 void mcp2515_write(uint8_t address, char* buffer, size_t length){
 
     if (buffer == 0 || length == 0){
@@ -51,6 +57,7 @@ void mcp2515_write(uint8_t address, char* buffer, size_t length){
     SPI_release_slaves();
 }
 
+//Bit modify register in mcp2515 using SPI
 void mcp2515_bitmod(uint8_t address, uint8_t mask, uint8_t data){
 
     SPI_select_slave(CAN);
@@ -61,6 +68,7 @@ void mcp2515_bitmod(uint8_t address, uint8_t mask, uint8_t data){
     SPI_release_slaves();
 }
 
+//Reset mcp2515
 void mcp2515_reset(){
 
     SPI_select_slave(CAN);
@@ -68,6 +76,7 @@ void mcp2515_reset(){
     SPI_release_slaves();
 }
 
+//Read status of mcp2515
 uint8_t mcp2515_read_status(){
 
     char status;
@@ -80,6 +89,7 @@ uint8_t mcp2515_read_status(){
     return (uint8_t)status;  
 }
 
+//Send CAN dataframe with given data and ID
 void mcp2515_send_byte(uint16_t id, uint8_t data) {
 
     #define DEBUGGING_MCP2515_SEND_BYTE 0
@@ -119,7 +129,7 @@ void mcp2515_send_byte(uint16_t id, uint8_t data) {
     // Wait for send
     _delay_us(500);
 
-    // wait more for sending???
+    // wait more for sending?
     _delay_ms(10); 
 }
 
@@ -143,6 +153,7 @@ uint8_t mcp2515_receive_byte(uint16_t *id, uint8_t* data){
     return 1;
 }
 
+//Load given TX buffer
 void mcp2515_load_tx_buffer(uint8_t TXn, uint8_t data) {
 
     SPI_select_slave(CAN);
@@ -167,6 +178,7 @@ void mcp2515_load_tx_buffer(uint8_t TXn, uint8_t data) {
     SPI_release_slaves();
 }
 
+//Request to send
 void mcp2515_rts(uint8_t TXn){
 
     SPI_select_slave(CAN);
@@ -191,6 +203,7 @@ void mcp2515_rts(uint8_t TXn){
     SPI_release_slaves();
 }
 
+//read given RX buffer
 void mcp2515_read_rx_buffer(uint8_t RXn, uint16_t* id, uint8_t *data) {
 
     uint8_t idu;

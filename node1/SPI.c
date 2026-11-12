@@ -1,5 +1,6 @@
 #include "SPI.h"
 
+//Initialize SPI master
 void SPI_master_init(){
     
     //Configure ss pins B1, B3 & B4 as outputs
@@ -11,6 +12,7 @@ void SPI_master_init(){
     SPI_release_slaves();
 }
 
+//Select one slave only, pull other lines high
 void SPI_select_slave(Slave slave){
 
     SPI_release_slaves();
@@ -39,11 +41,13 @@ void SPI_select_slave(Slave slave){
     }
 }
 
+//Set all slave pins high
 void SPI_release_slaves(){
 
     PORTB |= (1<<PORTB3) | (1<<PORTB4) | (1<<PORTB0);
 }
 
+//Write one byte
 void SPI_write_byte(char cData){
 
     // Start transmission 
@@ -53,6 +57,7 @@ void SPI_write_byte(char cData){
     
 }
 
+//Read one byte by sending dummy data
 void SPI_read_byte(char *cData){
 
     SPI_write_byte(*cData);
@@ -60,6 +65,7 @@ void SPI_read_byte(char *cData){
     *cData = SPDR;
 }
 
+//Write data of given length
 void SPI_write(char* buffer, size_t length) {
 
     for (size_t i=0; i<length; i++){
@@ -70,6 +76,7 @@ void SPI_write(char* buffer, size_t length) {
     SPI_release_slaves(); 
 }
 
+//recieve data of given length
 void SPI_read(char* buffer, size_t length) {
 
     for (size_t i=0; i<length; i++){

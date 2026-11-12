@@ -57,6 +57,7 @@ void OLED_go_to(uint8_t column, uint8_t row){
     OLED_go_to_column(column);
 }
 
+
 void OLED_send_data(char data){
 
     //could remove to improve performance? Beware

@@ -307,6 +307,7 @@ const unsigned char PROGMEM font4[95][4] = {
 // 8x8 Black & White Emoji Font Library (Stored in Flash Memory)
 // Dimensions changed to [12][8] to fit all 12 emojis. 
 // Data is rotated 90 degrees clockwise.
+// Written by AI
 const unsigned char emoji_font[12][8] PROGMEM = {
     // 0: Smiley Face 🙂 
     {0b00111100, 0b01000010, 0b10010101, 0b10100001, 0b10100001, 0b10010101, 0b01000010, 0b00111100},

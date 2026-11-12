@@ -133,3 +133,20 @@ void SRAM_test(void)
 //char testbyte[16] = "Hello World";
 //char testCHAR = 50;
 //char* p_testbyte = &testbyte[0];
+
+
+
+ //Test display OLED print function
+        // OLED_clear_dispay();
+        // OLED_go_to_page(0x00);
+        // OLED_go_to_column(128/2);
+        // OLED_printf_2("Hello World!", OLED_CENTER);
+        // OLED_go_to_page(0x32);
+        // OLED_printf_2("Goodnight:)", OLED_CENTER);
+        // OLED_go_to_page(0x64);
+        // OLED_printf_2("<3", OLED_CENTER);
+        // OLED_go_to(0, 0x96);
+        // for(int i=0; i<12; i++){
+        //     OLED_print_emoji(i);
+        //     OLED_send_data(0x00);
+        // }

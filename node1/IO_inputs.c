@@ -1,10 +1,13 @@
 #include "IO_inputs.h"
 
+
+//Tested minimum and maximum joystick output values after conversion
 uint8_t g_joy_x_min = 70;
 uint8_t g_joy_x_max = 255;
 uint8_t g_joy_y_min = 70;
 uint8_t g_joy_y_max = 255;
 
+//Update/get joystick slider position in x and y directions
 void get_position_raw(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile uint8_t *sli_x, volatile uint8_t * sli_y) {
 
     volatile char* p_ADC = (char *)0x1200;
@@ -15,13 +18,13 @@ void get_position_raw(volatile uint8_t *joy_x, volatile uint8_t *joy_y, volatile
 
     *joy_x = *p_ADC;
     *joy_y = *p_ADC;
-
     *sli_x = *p_ADC;
     *sli_y = *p_ADC; 
 
     //printf("verdier: %d %d %d %d\n\r", *joy_x, *joy_y, *sli_x, *sli_y); //test to see the positions
 }
 
+//Convert type Dir to string
 const char *dir_to_string(Dir dir){    
 switch (dir) {
     case JOY_LEFT:    return "LEFT";
@@ -33,6 +36,7 @@ switch (dir) {
     }   
 }
 
+//Convert joystick position to number in range 0-255
 void joy_get_analog_positive_position(uint8_t* analog_x, uint8_t* analog_y){
     
     uint8_t joy_x = 0;
@@ -46,7 +50,6 @@ void joy_get_analog_positive_position(uint8_t* analog_x, uint8_t* analog_y){
     int analog_x_tmp = (255 * (float)(joy_x - g_joy_x_min))/x_range;
     int analog_y_tmp = (255 * (float)(joy_y - g_joy_y_min))/y_range;
 
-    //Sikrer at posisjonen aldri kan bli større enn 100 eller mindre enn -100 selv med upresis kalibrering
     if (analog_x_tmp < 0)      { *analog_x = 0;     }   
     else if (analog_x_tmp > 255)    { *analog_x = 255;   }
     else                             { *analog_x = analog_x_tmp;   }
@@ -56,6 +59,7 @@ void joy_get_analog_positive_position(uint8_t* analog_x, uint8_t* analog_y){
     else                             { *analog_y = analog_y_tmp;   }
 }
 
+//Scales joystick position to +-100
 void joy_get_analog_position(int* analog_x, int* analog_y){
     
     uint8_t joy_x = 0;
@@ -276,14 +280,16 @@ void calibrate_joy(){
 }
     */ 
 
+//Check if button is down
 uint8_t button_down(){
 
     return (PINB & 0b00000010) != 2;
 }
 
+//Checkes if the button is pressed and was not pressed on last call
 uint8_t button_pressed(){
     
-    static uint8_t prev_button_state = 0;
+    static uint8_t prev_button_state = 0; 
     uint8_t button_state = button_down();
     
     uint8_t pressed = 0;

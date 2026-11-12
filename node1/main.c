@@ -17,6 +17,7 @@
 
 int main(void) {
 	
+    //initialize uart
 	uart_init( MYUBRR );
     //printf("TEST1?");
     
@@ -46,30 +47,19 @@ int main(void) {
     
     while (1) 
     {
-        //Test display OLED print function
-        // OLED_clear_dispay();
-        // OLED_go_to_page(0x00);
-        // OLED_go_to_column(128/2);
-        // OLED_printf_2("Hello World!", OLED_CENTER);
-        // OLED_go_to_page(0x32);
-        // OLED_printf_2("Goodnight:)", OLED_CENTER);
-        // OLED_go_to_page(0x64);
-        // OLED_printf_2("<3", OLED_CENTER);
-        // OLED_go_to(0, 0x96);
-        // for(int i=0; i<12; i++){
-        //     OLED_print_emoji(i);
-        //     OLED_send_data(0x00);
-        // }
-        
+        //Update display
         MENU_update();
 
+        //Send game state to node 2
         mcp2515_send_byte(GAME_MODE_ID, (uint8_t)g_p_game_state->game_mode);
 
+        //If in game is in play
         if (g_p_game_state->game_mode == 1 || g_p_game_state->game_mode == 2) {
             uint8_t joy_pos_x;
             uint8_t joy_pos_y;
             uint8_t btn_pres = button_pressed();
 
+            //get joystick position and send to node 2. If button pressed, send to node 2
             joy_get_analog_positive_position(&joy_pos_x, &joy_pos_y);
                 
             mcp2515_send_byte(JOY_X_ID, (uint8_t)joy_pos_x);
@@ -81,11 +71,11 @@ int main(void) {
                 mcp2515_send_byte(JOY_BTN_ID, (uint8_t)btn_pres);
             }
 
-
+            //Variables for recieved id and data
             uint16_t received_id;
             uint8_t received_data;
 
-            // if new data
+            // if new data of lives left is recieved, update game state lives
             while (mcp2515_receive_byte(&received_id, &received_data) ) {
                 if (received_id == GAME_LIVES_ID) {
                     g_p_game_state->lives_left = received_data;
