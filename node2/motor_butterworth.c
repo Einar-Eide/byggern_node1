@@ -17,6 +17,7 @@ void butterworth_init(Butterworth2ndOrder *filter) {
 }
 
 int32_t butterworth_process(Butterworth2ndOrder *filter, int16_t input) {
+
     int64_t accumulator = 0;
 
     accumulator += (int32_t)filter->b0 * input;

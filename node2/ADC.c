@@ -18,7 +18,7 @@ void adc_init() {
                  |(ADC_MR_PRESCAL(2))      // Gir f_adc = 14MHz
                  |(ADC_MR_TRACKTIM(2));    // Tracking time, time needed to track the analog signal. Calculated using: racking Time = (TRACKTIM + 1) * ADCClock periods (ADCClock period = 14Mhz) (racking Time>160ns)
  
-    //Enable channel 0
+    // Enable channel 0
     ADC->ADC_CHER = (ADC_CHER_CH0);   
 
     // Start analog-to-digital conversion

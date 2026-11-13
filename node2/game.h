@@ -10,9 +10,6 @@
 
 typedef enum {MENU, SPEED, POSITION} Game_Mode;
 
-void play_pong();
-void during_game();
 bool is_game_over();
 uint8_t game_reset();
-uint32_t millis(void);
 void lose_life(uint8_t *lives);

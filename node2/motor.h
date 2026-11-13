@@ -37,7 +37,3 @@ void motor_set_speed(volatile uint8_t *joy_x);
 //Med PI regulator
 void motor_pi_controller(uint8_t r_, uint32_t y);
 void motor_set_dir_bool(uint8_t dir);
-
-//void motor_set_duty_cycle_from_byte( uint8_t b );
-//void motor_set_duty_cycle_cdty( uint32_t CDTY );
-

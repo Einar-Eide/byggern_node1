@@ -1,0 +1,15 @@
+    // printf("encoder value: %d \r\n", *data);
+
+    //Old game logic
+        /*if (game_is_running && !prev_game_is_running) {
+            // start game (trigger game_init)
+            encoder_reset();
+            uint8_t lives = game_reset();
+        }*/
+
+    //printf("joy_x: %d\r\n", joy_x);
+
+//Notes for Pins in motor.c
+// PB12 - D7
+// PC23 - D20
+// 16-84% duty cycle

@@ -6,10 +6,6 @@ void pwm_init() {
     PMC->PMC_PCER0 |= (1 << ID_PIOB);
     PMC->PMC_PCER1 |= (1 << (ID_PWM - 32));
 
-    // ########################################
-    //         HERFRA FUNGERER DET
-    // ########################################
-
     // PB13 (PWMH1) og PC18 (PWMH6) -> periferi B
     PIOB->PIO_ABSR |= PIO_ABSR_P13; //| PIO_ABSR_P19;
     PIOB->PIO_PDR   = PIO_PDR_P13; // | PIO_PDR_P19;

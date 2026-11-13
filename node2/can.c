@@ -19,6 +19,7 @@ void can_printmsg(CanMsg m){
 
 
 void can_init(CanInit init, uint8_t rxInterrupt){
+
     // Disable CAN
     CAN0->CAN_MR &= ~CAN_MR_CANEN; 
     
@@ -55,6 +56,7 @@ void can_init(CanInit init, uint8_t rxInterrupt){
     CAN0->CAN_MB[rxMailbox].CAN_MID = CAN_MID_MIDE;
     CAN0->CAN_MB[rxMailbox].CAN_MMR = CAN_MMR_MOT_MB_RX;
     CAN0->CAN_MB[rxMailbox].CAN_MCR |= CAN_MCR_MTCR;
+
     if(rxInterrupt){
         // Enable interrupt on receive
         CAN0->CAN_IER |= (1 << rxMailbox); 
@@ -67,6 +69,7 @@ void can_init(CanInit init, uint8_t rxInterrupt){
 }
 
 void can_tx(CanMsg m){
+
     while(!(CAN0->CAN_MB[txMailbox].CAN_MSR & CAN_MSR_MRDY)){}
     
     // Set message ID and use CAN 2.0B protocol
@@ -84,6 +87,7 @@ void can_tx(CanMsg m){
 }
 
 uint8_t can_rx(CanMsg* m){
+    
     if(!(CAN0->CAN_MB[rxMailbox].CAN_MSR & CAN_MSR_MRDY)){
         return 0;
     }

@@ -31,5 +31,4 @@ void encoder_reset() {
 void encoder_read(uint32_t* data) {
     
     *data = TC2->TC_CHANNEL[0].TC_CV;
-    // printf("encoder value: %d \r\n", *data);
 }

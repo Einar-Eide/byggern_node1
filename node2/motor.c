@@ -13,13 +13,10 @@ void motor_init(){
     PIOB->PIO_ABSR |= PIO_ABSR_P12;
     PIOB->PIO_PDR   = PIO_PDR_P12;
 
-    // Kanal 0 (pinne ?? - ??)
-    // setter prescaler og polaritet
-    // bestemer periode
-    // setter duty cycle
-    PWM->PWM_CH_NUM[0].PWM_CMR  = PWM_CMR_CPRE_MCK_DIV_4 | PWM_CMR_CPOL;
-    PWM->PWM_CH_NUM[0].PWM_CPRD = PWM_CPRD_MOTOR;
-    PWM->PWM_CH_NUM[0].PWM_CDTY = PWM_MID_CDTY_MOTOR;
+    // Kanal 0
+    PWM->PWM_CH_NUM[0].PWM_CMR  = PWM_CMR_CPRE_MCK_DIV_4 | PWM_CMR_CPOL;     // setter prescaler og polaritet
+    PWM->PWM_CH_NUM[0].PWM_CPRD = PWM_CPRD_MOTOR;    // bestemer periode
+    PWM->PWM_CH_NUM[0].PWM_CDTY = PWM_MID_CDTY_MOTOR;     // setter duty cycle
 
     // Start kanal 0
     PWM->PWM_ENA = PWM_ENA_CHID0;
@@ -28,10 +25,7 @@ void motor_init(){
     PIOC->PIO_PER  |= PIO_PER_P23;  // enable PIO control
     PIOC->PIO_OER  |= PIO_OER_P23;  // sett til output
 
-    //PIOC->PIO_ODSR |= PIO_ODSR_P23; // sett pin til høy
     PIOC->PIO_SODR |= PIO_SODR_P23; // endre pin verdien
-    
-    
 }
 
 void motor_set_duty_cycle_cdty(uint32_t CDTY) {
@@ -52,7 +46,6 @@ void motor_set_duty_cycle_from_byte(uint8_t b) {
 
     uint32_t cdty = PWM_MIN_CDTY_MOTOR + ( (uint32_t)dcs * (PWM_MAX_CDTY_MOTOR - PWM_MIN_CDTY_MOTOR)) / 255; 
     motor_set_duty_cycle_cdty(cdty);
-
 }
 
 void motor_game_over(){
@@ -84,14 +77,13 @@ void motor_set_dir(volatile uint8_t *joy_x) {
     } else if (dir == JOY_RIGHT) {
         PIOC->PIO_CODR |= PIO_CODR_P23; // sett pin til lav
     }
-
 }
 
 void motor_set_speed(volatile uint8_t *joy_x){
     
-    int neutral_pos_x = 128;
-    int deadzone = 1;
-    int max_local_speed = 200;
+    int neutral_pos_x = 128; // 255/2
+    int deadzone = 1; // vente /på at joysticken har beveget seg nok
+    int max_local_speed = 200; // Det ble for fort med maks speed på 255
     
     int pos_from_x = abs((int)*joy_x - neutral_pos_x);
     int distance;
@@ -102,7 +94,7 @@ void motor_set_speed(volatile uint8_t *joy_x){
         distance = (pos_from_x-deadzone);
     }
     
-    int linear_speed = (distance*max_local_speed)/(neutral_pos_x-deadzone);
+    int linear_speed = (distance*max_local_speed)/(neutral_pos_x-deadzone); 
 
     if (linear_speed > max_local_speed){
         linear_speed = max_local_speed;
@@ -141,9 +133,7 @@ void motor_pi_controller(uint8_t r_, uint32_t y) {
             e_int += e / CODE_EXEC_FREQUENCY;
         }
          
-        
         double u = e*MOTOR_POS_CONTROLLER_K_P + e_int*MOTOR_POS_CONTROLLER_K_I; 
-
         
         // choose motor direction
         if (u < 0) {
@@ -163,7 +153,6 @@ void motor_pi_controller(uint8_t r_, uint32_t y) {
         uint32_t cdty = PWM_MIN_CDTY_MOTOR + ( u * motor_pwm_range ) / ENC_MAX_VALUE ;
         motor_set_duty_cycle_cdty( cdty );
 
-
         motor_pi_controller_last_exec = totalMsecs(time_now());
     }
 }
@@ -176,9 +165,3 @@ void motor_set_dir_bool(uint8_t dir) {
         PIOC->PIO_CODR |= PIO_CODR_P23; // sett pin til lav
     }
 }
-
-// PB12 - D7
-
-// PC23 - D20
-
-// 16-84% duty cycle

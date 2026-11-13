@@ -51,14 +51,12 @@ void uart_init(uint32_t cpufreq, uint32_t baudrate){
     UART->UART_MR   |= UART_MR_PAR_NO;
     UART->UART_BRGR = cpufreq / 16 / baudrate;
     
-    
     // Configure interrupts on receive ready and errors
     UART->UART_IDR = 0xFFFFFFFF;
     UART->UART_IER = UART_IER_RXRDY | UART_IER_OVRE | UART_IER_FRAME | UART_IER_PARE;
 
     // Enable UART interrupt in the Nested Vectored Interrupt Controller (NVIC)
-    NVIC_EnableIRQ((IRQn_Type) ID_UART);
-    
+    NVIC_EnableIRQ((IRQn_Type) ID_UART); 
 }    
 
 void uart_tx(uint8_t val){

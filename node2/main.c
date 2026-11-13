@@ -88,7 +88,6 @@ int main()
             if (message.id == JOY_X_ID ) {
 
                 joy_x = message.byte[0];
-                //printf("joy_x: %d\r\n", joy_x);
             }
             else if (message.id == JOY_Y_ID) {
 
@@ -117,13 +116,6 @@ int main()
                 }
             }
         }
-
-        //Old game logic
-        /*if (game_is_running && !prev_game_is_running) {
-            // start game (trigger game_init)
-            encoder_reset();
-            uint8_t lives = game_reset();
-        }*/
 
         //PI regulator
         if (mode == 2) {
@@ -155,7 +147,7 @@ int main()
             last_time_blocked = totalMsecs(time_now());
 
             if (can_trigger_new_point ) {
-                //lose_life(&lives);
+
                 lives -=1;
                 printf("ir sensor is blocked! %d\r\n", lives);
 
@@ -166,7 +158,7 @@ int main()
                 lives_msg.byte[0] = lives;
                 can_tx(lives_msg);
 
-                printf("Sent can message");
+                //printf("Sent can message");
             }
 
             can_trigger_new_point = false;
@@ -179,6 +171,5 @@ int main()
                 can_trigger_new_point = false;
             }
         }
-
     }
 }

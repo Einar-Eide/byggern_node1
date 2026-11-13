@@ -7,6 +7,7 @@ uint64_t calib;
 static uint64_t now = 0;
     
 __attribute__((constructor)) void time_init(void){
+    
     // Clock calibration is set to '(num cycles for 1ms) / 8'
     // (SysTick is by default set to use 8x clock divisor)
     calib = SysTick->CALIB * 8;
